@@ -23,8 +23,22 @@ export function Nav(){
 export function Home(){
     return(
         <>
-        <main className="">
-        
+        <main className="flex w-full h-[80vh]">
+            <div className="left w-[50%] h-full p-5 flex flex-col justify-center">
+                <div className="flex flex-col justify-start h-full m-5">
+                    <h3 className="font-bold text-[84px]">Welcome To MLT</h3>
+                    <h1 className="font-bold text-[48px]">A Car Rental Website</h1>
+                </div>
+                <div className="text-start w-[90%] m-5">
+                    <p className="text-[24px]">An accessible and affordable high-quality car rental service. Choose your ride. Start your journey.
+                    See the story the road has to offer</p>
+                </div>
+            </div>
+            <div className="right w-[50%] h-full">
+                <div className="[clip-path:circle(50%_at_80%_50%)] bg-gray-300 h-full w-full">
+
+                </div>
+            </div>
         </main>    
         </>
     )
