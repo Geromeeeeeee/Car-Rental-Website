@@ -1,3 +1,6 @@
+import { useState, useEffect } from "react"
+import axios from "axios"
+
 export function Nav(){
     return(
         <>
@@ -45,10 +48,30 @@ export function Home(){
 }
 
 export function Cars(){
+    const [cars, setCars] = useState([]);
+    const [featured, setFeat] = useState([]);
+
+    useEffect(()=>{
+        const fetch_results = async () => {
+            const results = await axios.get('http://localhost/Car-Rental-Website/back/landing.php')
+            setCars(results.data.cars)
+            setFeat(results.data.featured)
+        }
+
+        fetch_results();
+    }, [])
+
     return(
         <>
         <section className="w-full h-screen bg-gray-300">
-
+            <div className="carousel w-full overflow-auto h-[90%] flex">
+                {cars.map(car=>(
+                    <div key={car.car_id} className="bg-gray-400 w-32 h-[90%]">
+                        <img src={car.image} alt="" />
+                        <p>{car.model}</p>
+                    </div>  
+                ))}
+            </div>
         </section>
         </>
     )
