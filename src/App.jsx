@@ -1,11 +1,11 @@
-import { Nav, Main } from './landing.jsx'
+import { Nav, Home} from './landing.jsx'
 
 function App() {
 
   return (
     <>
       <Nav/>
-      <Main/>
+      <Home/>
     </>
   )
 }
