@@ -1,4 +1,4 @@
-import { Nav, Home} from './landing.jsx'
+import { Nav, Home, Cars, Contact} from './landing.jsx'
 
 function App() {
 
@@ -6,6 +6,8 @@ function App() {
     <>
       <Nav/>
       <Home/>
+      <Cars/>
+      <Contact/>
     </>
   )
 }

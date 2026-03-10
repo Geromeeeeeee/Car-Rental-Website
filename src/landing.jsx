@@ -26,11 +26,11 @@ export function Home(){
         <main className="flex w-full h-[80vh]">
             <div className="left w-[50%] h-full p-5 flex flex-col justify-center">
                 <div className="flex flex-col justify-start h-full m-5">
-                    <h3 className="font-bold text-[84px]">Welcome To MLT</h3>
-                    <h1 className="font-bold text-[48px]">A Car Rental Website</h1>
+                    <h3 className="font-bold text-[12vh]">Welcome To MLT</h3>
+                    <h1 className="font-bold text-[6vh]">A Car Rental Website</h1>
                 </div>
                 <div className="text-start w-[90%] m-5">
-                    <p className="text-[24px]">An accessible and affordable high-quality car rental service. Choose your ride. Start your journey.
+                    <p className="text-[4.5vh]">An accessible and affordable high-quality car rental service. Choose your ride. Start your journey.
                     See the story the road has to offer</p>
                 </div>
             </div>
@@ -41,5 +41,23 @@ export function Home(){
             </div>
         </main>    
         </>
+    )
+}
+
+export function Cars(){
+    return(
+        <>
+        <section className="w-full h-screen bg-gray-300">
+
+        </section>
+        </>
+    )
+}
+
+export function Contact(){
+    return(
+        <section className="w-full h-screen bg-gray-200">
+
+        </section>
     )
 }
