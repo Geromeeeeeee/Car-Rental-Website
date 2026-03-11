@@ -80,7 +80,7 @@ export function Cars(){
 export function Contact(){
     return(
         <section className="w-full h-screen bg-gray-200">
-
+        
         </section>
     )
 }

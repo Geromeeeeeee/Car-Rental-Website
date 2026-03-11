@@ -1,14 +1,14 @@
-import { Nav, Home, Cars, Contact} from './landing.jsx'
+import { BrowserRouter, Route, Routes } from "react-router-dom"
+import { Landing_Page } from "./landing_page"
 
 function App() {
 
   return (
-    <>
-      <Nav/>
-      <Home/>
-      <Cars/>
-      <Contact/>
-    </>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Landing_Page/>}/>
+      </Routes>
+    </BrowserRouter>
   )
 }
 
