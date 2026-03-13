@@ -3,6 +3,7 @@ import { Landing_Page } from "./landing_page"
 import { Nav } from "./landing_comp";
 import { Login } from "./login"
 import { useState } from "react";
+import { Signup } from "./signup";
 
 function App() {
 
@@ -14,6 +15,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Landing_Page />}/>
         <Route path="/login" element={<Login setNavDisplay={setNavDisplay}/>}/>
+         <Route path="/signup" element={<Signup setNavDisplay={setNavDisplay}/>}/>
       </Routes>
     </BrowserRouter>
   )
