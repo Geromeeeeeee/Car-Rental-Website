@@ -45,6 +45,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
         $pass = $user_data->password;
         $phone = $user_data->phone;
         $licenseNumber = $user_data->licenseNumber;
+        $defaultAdd = "Address";
 
         //Validation ng mga user input. Di ko gets ginawa ni gab
         $nameParts = array_filter(explode(" ", $fullName));
@@ -86,26 +87,23 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
         } $check->close();
         
         $hashed_password = password_hash($pass, PASSWORD_DEFAULT);
-        $stmt = $conn->prepare("INSERT INTO users(fullName,email,phone,licenseNumber,password) 
-                        VALUES (?, ?, ?, ?, ?)");
+        $stmt_signup = $conn->prepare("INSERT INTO users(fullname,email,phone,address,license,password) VALUES (?, ?, ?, ?, ?, ?)");
 
-        if (!$stmt) {
+        if (!$stmt_signup) {
             echo json_encode(["signup" => "8"]);
             exit;
         }
 
-        $stmt->bind_param("sssss", $fullName, $email, $phone, $licenseNumber, $hashed_password);
-        if ($stmt->execute()) {
+        $stmt_signup->bind_param("ssssss", $fullName, $email, $phone, $defaultAdd ,$licenseNumber, $hashed_password);
+        if ($stmt_signup->execute()) {
             echo json_encode(["signup" => "success"]);
-            $initial_form = "login"; 
         } else {
             echo json_encode(["signup" => "8"]);
-            exit;
         }
-        $stmt->close();
+        $stmt_signup->close();
     }
 }
 
-$conn -> close();
+$conn->close();
 
 ?>

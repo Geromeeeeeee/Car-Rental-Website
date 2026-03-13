@@ -35,7 +35,7 @@ export function Signup({ setNavDisplay }) {
             return
         } else {
            try {
-            const response = await axios.post('http://localhost/Car-Rental-Website/Back/login_signup.php', {
+            const response = await axios.post('http://localhost/Car-Rental-Website/back/login_signup.php', {
                 action: "signup",
                 fullName: fullName,
                 email: email,
@@ -75,7 +75,7 @@ export function Signup({ setNavDisplay }) {
             }
             
            } catch (error) {
-            
+            setError("Connection error. Make sure Apache and MySQL are running.")
            }
         }
     }
