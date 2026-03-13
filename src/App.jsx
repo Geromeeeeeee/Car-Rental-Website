@@ -1,5 +1,6 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom"
-import { Landing_Page } from "./landing_page"
+import { Landing_Page} from "./landing_page"
+import { About} from "./landing_comp"
 import { Nav } from "./landing_comp";
 import { Login } from "./login"
 import { useState } from "react";
