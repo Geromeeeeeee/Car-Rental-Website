@@ -1,9 +1,7 @@
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import axios from "axios"
-
 // please anong magandang color T.T
-
 export function Login({setNavDisplay, setLog}){
     const navigate = useNavigate()
 
@@ -15,7 +13,7 @@ export function Login({setNavDisplay, setLog}){
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [error, setError] = useState("")
-    
+
     // Forgot password modal states
     const [showForgotModal, setShowForgotModal] = useState(false)
     const [resetEmail, setResetEmail] = useState("")
@@ -27,14 +25,16 @@ export function Login({setNavDisplay, setLog}){
             setError("Please fill all fields")
             return
         }
-        
         try {
-            const response = await axios.post('http://localhost/Car-Rental-Website/back/login_signup.php', {
-                action: "login",
-                email: email,
-                password: password
-            })
-            
+            const response = await axios.post(
+                'http://localhost/Car-Rental-Website/back/login_signup.php',
+                {
+                    action: "login",
+                    email: email,
+                    password: password
+                },
+                { withCredentials: true }
+            )
             const status = response.data.stat 
             if(status === "logged"){
                 localStorage.setItem("loggedIn", "true")
@@ -74,7 +74,6 @@ export function Login({setNavDisplay, setLog}){
                 <div className="bg-white p-8 rounded-lg shadow-xl w-full max-w-md">
                     <h2 className="text-3xl font-bold text-center mb-2">Welcome To</h2>
                     <h2 className="text-3xl font-bold text-center mb-2">MLT Car Rental</h2>
-                    
                     {error && (
                         <div className="bg-red-50 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
                             {error}
@@ -159,7 +158,6 @@ export function Login({setNavDisplay, setLog}){
                                     <p className="text-gray-600 mb-4">
                                         Enter your email address and we'll send you a link to reset your password.
                                     </p>
-                                    
                                     <input 
                                         type="email"
                                         value={resetEmail}

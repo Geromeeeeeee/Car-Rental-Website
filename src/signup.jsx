@@ -104,7 +104,7 @@ export function Signup({ setNavDisplay }) {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-gray-100 flex items-center justify-center p-5">
+        <div className="min-h-screen bg-linear-to-br from-blue-50 to-gray-100 flex items-center justify-center p-5">
             <div className="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md border border-gray-200">
                 <div className="text-center mb-6">
                     <h1 className="text-4xl font-bold text-black-900"> MLT Car Rental</h1>

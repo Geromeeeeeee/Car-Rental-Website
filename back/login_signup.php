@@ -1,6 +1,16 @@
 <?php
 include 'db_header.php';
 
+// Match session cookie settings across endpoints for consistent auth behavior.
+session_set_cookie_params([
+    'lifetime' => 0,
+    'path' => '/',
+    'httponly' => true,
+    'samesite' => 'Lax'
+]);
+
+session_start();
+
 if($_SERVER['REQUEST_METHOD']==='POST'){
     $user_data = json_decode(file_get_contents('php://input'));
 
@@ -22,6 +32,8 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
                 $stored_password = $data['password'];
                 //Checking if credentials match
                  if (password_verify($pass, $stored_password)) {
+                    $_SESSION['user_id'] = $data['user_id'];
+                    $_SESSION['email'] = $email;
                     echo json_encode(["stat" => "logged"]);
                     exit;
                 } else {
@@ -101,6 +113,12 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
             echo json_encode(["signup" => "8"]);
         }
         $stmt_signup->close();
+    }
+
+    if($user_data->action==="logout"){
+        session_unset();
+        session_destroy();
+        exit;
     }
 }
 
