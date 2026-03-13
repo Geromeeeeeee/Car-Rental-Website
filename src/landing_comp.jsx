@@ -67,7 +67,7 @@ export function Home(){
                 <img
                     src="/src/assets/caru.png"
                     alt="Car"
-                    className="absolute w-[100%] right-[-0px] bottom-[40px] object-contain drop-shadow-2xl hover:scale-115 transition duration-500"
+                    className="absolute w-[150%] right-[-0px] bottom-[40px] object-contain drop-shadow-2xl hover:scale-115 transition duration-500"
                 />
 
             </div>
@@ -148,7 +148,7 @@ export function About(){
 
                     <a 
                     href="mailto:mltcarrental@gmail.com"
-                    className="flex items-center space-x-3 hover:text-red-500 transition"
+                    className="flex items-center space-x-3 hover:text-orange-500 transition"
                     >
                         <FaEnvelope size={30}/>
                         <span>MLTcarrental@gmail.com</span>
