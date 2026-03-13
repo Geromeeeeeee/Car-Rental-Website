@@ -29,7 +29,7 @@ export function Login({setNavDisplay}){
         }
         
         try {
-            const response = await axios.post('http://localhost/Car-Rental-Website/Back/login_signup.php', {
+            const response = await axios.post('http://localhost/Car-Rental-Website/back/login_signup.php', {
                 action: "login",
                 email: email,
                 password: password
@@ -40,6 +40,10 @@ export function Login({setNavDisplay}){
                 navigate("/")
             } else if (status === "failed"){
                 setError("Incorrect Details")
+                setEmail("")
+                setPassword("")
+            } else if (status === "notfound"){
+                setError("Account Not Found")
                 setEmail("")
                 setPassword("")
             }
@@ -134,7 +138,6 @@ export function Login({setNavDisplay}){
                 </div>
             </div>
 
-          //Newlyadded Forgot Password Modal
             {showForgotModal && (
                 <div className="fixed inset-0 bg-white bg-opacity-50 flex items-center justify-center p-4 z-50">
                     <div className="bg-white rounded-lg shadow-xl max-w-md w-full">

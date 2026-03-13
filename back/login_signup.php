@@ -5,7 +5,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
     $user_data = json_decode(file_get_contents('php://input'));
 
     //login process. hindi ko to masyadong gets, kinuha ko lang sa code ni gab. sorry >.<
-    if($user_data->action=="login"){
+    if($user_data->action==="login"){
 
         $email = $user_data->email;
         $pass = $user_data->password;
@@ -26,14 +26,83 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
                     exit;
                 } else {
                     echo json_encode(["stat" => "failed"]);
+                    exit;
                 }
             //Checking if may credentials talaga sa database. If wala, this happens.
             } else {
                 echo json_encode(["stat" => "notfound"]);
+                exit;
             }
             $stmt -> close();
         }
 
+    }
+
+    //Signup process
+    if($user_data->action==="signup"){
+        $fullName = $user_data->fullName;
+        $email = $user_data->email;
+        $pass = $user_data->password;
+        $phone = $user_data->phone;
+        $licenseNumber = $user_data->licenseNumber;
+
+        //Validation ng mga user input. Di ko gets ginawa ni gab
+        $nameParts = array_filter(explode(" ", $fullName));
+        if (count($nameParts) < 2) {
+            echo json_encode(["signup" => "1"]);
+            exit;
+        } elseif (!preg_match("/^[a-zA-Z ]+$/", $fullName)) {
+            echo json_encode(["signup" => "2"]);
+            exit;
+        } elseif (strlen($fullName) < 5) {
+            echo json_encode(["signup" => "3"]);
+            exit;
+        }
+
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            echo json_encode(["signup" => "4"]);
+            exit;
+        }
+
+        if (strlen($pass) < 8 || strlen($pass) > 20) {
+            echo json_encode(["signup" => "5"]);
+            exit;
+        }
+
+        if (!preg_match("/^[A-Z]{3}\s?\d{2,4}$/", $licenseNumber)) {
+            echo json_encode(["signup" => "6"]);
+            exit;
+        }
+
+        $check = $conn->prepare("SELECT user_id FROM users WHERE TRIM(email)=?");
+        $check->bind_param("s", $email);
+        $check->execute();
+        $result = $check->get_result();
+
+        if ($result->num_rows > 0){
+            echo json_encode(["signup" => "7"]);
+            $check->close();
+            exit;
+        } $check->close();
+        
+        $hashed_password = password_hash($pass, PASSWORD_DEFAULT);
+        $stmt = $conn->prepare("INSERT INTO users(fullName,email,phone,licenseNumber,password) 
+                        VALUES (?, ?, ?, ?, ?)");
+
+        if (!$stmt) {
+            echo json_encode(["signup" => "8"]);
+            exit;
+        }
+
+        $stmt->bind_param("sssss", $fullName, $email, $phone, $licenseNumber, $hashed_password);
+        if ($stmt->execute()) {
+            echo json_encode(["signup" => "success"]);
+            $initial_form = "login"; 
+        } else {
+            echo json_encode(["signup" => "8"]);
+            exit;
+        }
+        $stmt->close();
     }
 }
 
