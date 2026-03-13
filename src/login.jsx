@@ -138,7 +138,6 @@ export function Login({setNavDisplay}){
             {showForgotModal && (
                 <div className="fixed inset-0 bg-white bg-opacity-50 flex items-center justify-center p-4 z-50">
                     <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
-                       //header ng modal
                         <div className="flex justify-between items-center p-6 border-b">
                             <h3 className="text-2xl font-bold text-gray-800">Reset Password</h3>
                             <button 
