@@ -1,10 +1,14 @@
 import { useState, useEffect } from "react"
+import { useNavigate } from "react-router-dom"
 import axios from "axios"
 
-export function Nav(){
+export function Nav({navDisplay}){
+    const navigate = useNavigate()
+
     return(
         <>
-        <nav className="w-full h-[12.5vh] flex justify-between items-center p-5 ">
+        {navDisplay ? (
+            <nav className="w-full h-[12.5vh] flex justify-between items-center p-5 ">
             <div className="h-full w-[50%] flex items-center">
                 <img src="/src/assets/MLT_logo.png" alt="Logo" className="h-[200%] aspect-square"/>
                 <div className="flex space-x-6 ml-10">
@@ -16,9 +20,13 @@ export function Nav(){
             </div>
             
             <div className="log-in w-fit h-full">
-                <button className="log-in w-[fit] h-[fit] p-2.5 transition duration-150ms ease-in-out bg-black text-white font-bold rounded-lg text-l hover:scale-[1.075]">Login/Signup</button>
+                <button className="log-in w-[fit] h-[fit] p-2.5 transition duration-150ms ease-in-out bg-black text-white font-bold rounded-lg text-l hover:scale-[1.075]" onClick={()=>navigate("/login")}>Login/Signup</button>
             </div>
         </nav>
+        ) : (
+            null
+        )}
+        
         </>
     )
 }

@@ -1,32 +1,14 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 
 //please anong magandang color T.T
-export function Nav(){
-    return(
-        <nav className="w-full h-[12.5vh] flex justify-between items-center p-5 ">
-            <div className="h-full w-[50%] flex items-center">
-                <img src="/src/assets/MLT_logo.png" alt="Logo" className="h-[200%] aspect-square"/>
-                <div className="flex space-x-6 ml-10">
-                    <a href="#" className="hover:text-gray-500 text-xl px-3 py-2 rounded-lg hover:shadow-md hover:bg-gray-100 transition-all duration-300">Home</a>
-                    <a href="#" className="hover:text-gray-500 text-xl px-3 py-2 rounded-lg hover:shadow-md hover:bg-gray-100 transition-all duration-300">About</a>
-                    <a href="#" className="hover:text-gray-500 text-xl px-3 py-2 rounded-lg hover:shadow-md hover:bg-gray-100 transition-all duration-300">Cars</a>
-                    <a href="#" className="hover:text-gray-500 text-xl px-3 py-2 rounded-lg hover:shadow-md hover:bg-gray-100 transition-all duration-300">Contact</a>
-                </div>
-            </div>
-            
-            <div className="log-in w-fit h-full flex gap-3">
-                <a href="/login">
-                    <button className="px-9 py-4.5 bg-black text-white font-bold rounded-lg hover:scale-[1.075] transition duration-150">Login</button>
-                </a>
-                <a href="/signup">
-                    <button className="px-9 py-4.5 bg-blue-600 text-white font-bold rounded-lg hover:scale-[1.075] transition duration-150">Signup</button>
-                </a>
-            </div>
-        </nav>
-    )
-}
 
-export function Login(){
+export function Login({setNavDisplay}){
+
+    useEffect(()=>{
+        setNavDisplay(false)
+        return()=>setNavDisplay(true)
+    })
+
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [error, setError] = useState("")
@@ -42,7 +24,6 @@ export function Login(){
 
     return(
         <>
-            <Nav/>
             <div className="min-h-screen bg-gray-50 flex items-center justify-center p-5">
                 <div className="bg-white p-8 rounded-lg shadow-xl w-full max-w-md">
                     <h2 className="text-3xl font-bold text-center mb-2">Welcome To</h2>
