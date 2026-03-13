@@ -1,25 +1,41 @@
 import { useState, useEffect } from "react"
+import { useNavigate } from "react-router-dom"
+import axios from "axios"
 
 //please anong magandang color T.T
 
 export function Login({setNavDisplay}){
+    const navigate = useNavigate()
 
     useEffect(()=>{
         setNavDisplay(false)
         return()=>setNavDisplay(true)
-    })
+    },[])
 
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [error, setError] = useState("")
 
-    const handleLogin = (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault()
         if(!email || !password){
             setError("Please fill all fields")
             return
+        } else {
+            const response = await axios.post('http://localhost/Car-Rental-Website/Back/login_signup.php', {
+                action: "login",
+                email: email,
+                password: password
+            })
+            const status = response.data.stat 
+            if(status === "logged"){
+                navigate("/")
+            } else if (status === "failed"){
+                setError("Incorrect Details")
+                setEmail("")
+                setPassword("")
+            }
         }
-        console.log("Login:", {email, password})
     }
 
     return(
@@ -69,7 +85,7 @@ export function Login({setNavDisplay}){
                         <button 
                             type="submit"
                             className="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition duration-300"
-                        >
+                            >
                             Sign In
                         </button>
                     </form>
