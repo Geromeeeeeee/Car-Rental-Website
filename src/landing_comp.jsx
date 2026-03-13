@@ -43,7 +43,7 @@ export function Home(){
             <div className="left w-[50%] h-full p-5 flex flex-col justify-center">
 
                 <div className="flex flex-col justify-start h-full m-5">
-                    <h3 className="font-bold text-[12vh]">Welcome To MLT</h3>
+                <h3 className="font-bold text-[12vh]">Welcome To <span className="text-blue-500 text-center ml-35">MLT</span></h3>
                     <h1 className="font-bold text-[6vh]">A Car Rental Website</h1>
                 </div>
 
@@ -58,19 +58,19 @@ export function Home(){
             </div>
 
             {/* RIGHT SIDE */}
-            <div className="right w-[50%] h-full relative flex items-center justify-center">
-
-                {/* Circle Background */}
-                <div className="[clip-path:circle(50%_at_80%_50%)] bg-gray-300 h-full w-full"></div>
-
-                {/* Floating Car */}
+            <div className="right w-[50%] h-full relative flex items-center justify-center overflow-hidden">
+                {/* layered circular background */}
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_75%_50%,#93c5fd_0%,#bfdbfe_30%,#dbeafe_55%,transparent_70%)]"></div>
+                
+                {/* extra soft circle */}
+                <div className="absolute w-[650px] h-[650px] bg-blue-200 rounded-full right-[-200px] opacity-40"></div>
+                
+                {/* car */}
                 <img
-                    src="/src/assets/caru.png"
-                    alt="Car"
-                    className="absolute w-[150%] right-[-0px] bottom-[40px] object-contain drop-shadow-2xl hover:scale-115 transition duration-500"
-                />
-
-            </div>
+                src="/src/assets/caru.png"
+                alt="Car"
+                className="absolute w-[135%] right-[-20px] bottom-[30px] object-contain drop-shadow-2xl hover:scale-110 transition duration-500"/>
+                </div>
 
         </main>    
         </>
