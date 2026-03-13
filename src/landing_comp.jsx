@@ -3,13 +3,30 @@ import { useNavigate } from "react-router-dom"
 import axios from "axios"
 import { FaFacebook, FaPhone, FaEnvelope } from "react-icons/fa"
 
-export function Nav({navDisplay}){
+export function Nav({navDisplay, logged}){
     const navigate = useNavigate()
 
     return(
         <>
-        {navDisplay ? (
-            <nav className="w-full h-[12.5vh] flex justify-between items-center p-5 ">
+        {navDisplay ? ( logged ? (<nav className="w-full h-[12.5vh] flex justify-between items-center p-5 ">
+            <div className="h-full w-[50%] flex items-center">
+                <img src="/src/assets/MLT_logo.png" alt="Logo" className="h-[200%] aspect-square"/>
+                <div className="flex space-x-6 ml-10">
+                    <a href="#" className="hover:text-gray-500 text-xl px-3 py-2 rounded-lg hover:shadow-md hover:bg-gray-100 transition-all duration-300">Home</a>
+                    <a href="#About" className="hover:text-gray-500 text-xl px-3 py-2 rounded-lg hover:shadow-md hover:bg-gray-100 transition-all duration-300">About</a>
+                    <a href="#" className="hover:text-gray-500 text-xl px-3 py-2 rounded-lg hover:shadow-md hover:bg-gray-100 transition-all duration-300">Cars</a>
+                    <a href="#" className="hover:text-gray-500 text-xl px-3 py-2 rounded-lg hover:shadow-md hover:bg-gray-100 transition-all duration-300">Rental History</a>
+                </div>
+            </div>
+            
+            <div className="log-in w-fit h-full">
+                <button 
+                className="log-in w-[fit] h-[fit] p-2.5 transition duration-150ms ease-in-out bg-black text-white font-bold rounded-lg text-l hover:scale-[1.075]" 
+                onClick={()=>navigate("/login")}>
+                Logout
+                </button>
+            </div>
+        </nav>) : (<nav className="w-full h-[12.5vh] flex justify-between items-center p-5 ">
             <div className="h-full w-[50%] flex items-center">
                 <img src="/src/assets/MLT_logo.png" alt="Logo" className="h-[200%] aspect-square"/>
                 <div className="flex space-x-6 ml-10">
@@ -26,7 +43,8 @@ export function Nav({navDisplay}){
                 Login/Signup
                 </button>
             </div>
-        </nav>
+        </nav>)
+            
         ) : (
             null
         )}
@@ -67,7 +85,7 @@ export function Home(){
                 <img
                     src="/src/assets/caru.png"
                     alt="Car"
-                    className="absolute w-[150%] right-[-0px] bottom-[40px] object-contain drop-shadow-2xl hover:scale-115 transition duration-500"
+                    className="absolute w-[150%] right-0 bottom-10 object-contain drop-shadow-2xl hover:scale-115 transition duration-500"
                 />
 
             </div>

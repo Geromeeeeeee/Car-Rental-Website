@@ -4,7 +4,7 @@ import axios from "axios"
 
 // please anong magandang color T.T
 
-export function Login({setNavDisplay}){
+export function Login({setNavDisplay, setLog}){
     const navigate = useNavigate()
 
     useEffect(()=>{
@@ -37,6 +37,8 @@ export function Login({setNavDisplay}){
             
             const status = response.data.stat 
             if(status === "logged"){
+                localStorage.setItem("loggedIn", "true")
+                setLog(true)
                 navigate("/")
             } else if (status === "failed"){
                 setError("Incorrect Details")
