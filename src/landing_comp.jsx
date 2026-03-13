@@ -14,9 +14,8 @@ export function Nav({navDisplay}){
                 <img src="/src/assets/MLT_logo.png" alt="Logo" className="h-[200%] aspect-square"/>
                 <div className="flex space-x-6 ml-10">
                     <a href="#" className="hover:text-gray-500 text-xl px-3 py-2 rounded-lg hover:shadow-md hover:bg-gray-100 transition-all duration-300">Home</a>
-                    <a href="#" className="hover:text-gray-500 text-xl px-3 py-2 rounded-lg hover:shadow-md hover:bg-gray-100 transition-all duration-300">About</a>
+                    <a href="#About" className="hover:text-gray-500 text-xl px-3 py-2 rounded-lg hover:shadow-md hover:bg-gray-100 transition-all duration-300">About</a>
                     <a href="#" className="hover:text-gray-500 text-xl px-3 py-2 rounded-lg hover:shadow-md hover:bg-gray-100 transition-all duration-300">Cars</a>
-                    <a href="#" className="hover:text-gray-500 text-xl px-3 py-2 rounded-lg hover:shadow-md hover:bg-gray-100 transition-all duration-300">Contact</a>
                 </div>
             </div>
             
@@ -38,12 +37,16 @@ export function Nav({navDisplay}){
 export function Home(){
     return(
         <>
-        <main className="flex w-full h-[80vh]">
+        <main className="flex w-full max-w-[100vw] h-[80vh] overflow-hidden">
+
+            {/* LEFT SIDE */}
             <div className="left w-[50%] h-full p-5 flex flex-col justify-center">
+
                 <div className="flex flex-col justify-start h-full m-5">
                     <h3 className="font-bold text-[12vh]">Welcome To MLT</h3>
                     <h1 className="font-bold text-[6vh]">A Car Rental Website</h1>
                 </div>
+
                 <div className="text-start w-[90%] m-5">
                     <p className="text-[4.5vh]">
                         An accessible and affordable high-quality car rental service. 
@@ -51,13 +54,24 @@ export function Home(){
                         See the story the road has to offer
                     </p>
                 </div>
+
             </div>
 
-            <div className="right w-[50%] h-full">
-                <div className="[clip-path:circle(50%_at_80%_50%)] bg-gray-300 h-full w-full">
+            {/* RIGHT SIDE */}
+            <div className="right w-[50%] h-full relative flex items-center justify-center">
 
-                </div>
+                {/* Circle Background */}
+                <div className="[clip-path:circle(50%_at_80%_50%)] bg-gray-300 h-full w-full"></div>
+
+                {/* Floating Car */}
+                <img
+                    src="/src/assets/caru.png"
+                    alt="Car"
+                    className="absolute w-[100%] right-[-0px] bottom-[40px] object-contain drop-shadow-2xl hover:scale-115 transition duration-500"
+                />
+
             </div>
+
         </main>    
         </>
     )
@@ -95,7 +109,7 @@ export function Cars(){
 
 export function About(){
     return(
-        <section className="w-full h-screen bg-gray-200 flex justify-center pt-30">
+        <section className="w-full h-screen bg-gray-200 flex justify-center pt-30" id="About">
             <div className="w-full h-[90%] bg-white shadow-lg rounded-xl p-10 ">
                 
             <div className="border-t my-10"> </div>
