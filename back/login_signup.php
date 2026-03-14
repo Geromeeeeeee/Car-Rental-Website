@@ -1,14 +1,6 @@
 <?php
 include 'db_header.php';
 
-// Match session cookie settings across endpoints for consistent auth behavior.
-session_set_cookie_params([
-    'lifetime' => 0,
-    'path' => '/',
-    'httponly' => true,
-    'samesite' => 'Lax'
-]);
-
 session_start();
 
 if($_SERVER['REQUEST_METHOD']==='POST'){

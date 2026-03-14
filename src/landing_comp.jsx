@@ -70,10 +70,10 @@ export function Cars() {
     <>
       <section className="w-full h-screen flex items-center justify-center">
         <div className="carousel w-full overflow-x-scroll overflow-y-hidden h-[90%] flex items-center justify-start">
-          {cars.map((car) => (
+          {cars?.map((car) => (
             <div
               key={car.car_id}
-              className="w-[30%] h-[80%] shrink-0 m-[2.5vh] flex justify-center items-end rounded-2xl overflow-hidden shadow-[0px_0px_10px_0px_rgba(0,0,0,0.25)]"
+              className="w-[30%] h-[80%] shrink-0 m-[2.5vh] flex justify-center items-end rounded-2xl overflow-hidden shadow-[0px_0px_10px_0px_rgba(0,0,0,0.25)] hover:scale-[1.05] transition duration-250 ease-in-out hover:bg-white/75"
               style={{
                 backgroundImage: `url(http://localhost/vnm-system1/php/cars/uploads/cars/${car.image})`,
                 backgroundSize: "cover",
@@ -99,7 +99,7 @@ export function Cars() {
       </section>
 
       {details && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50" onClick={()=>setDetails(false)}>
           <div className="w-[50vw] h-[50vh] bg-green-400 rounded-xl shadow-lg p-4">
             
           </div>
@@ -111,21 +111,21 @@ export function Cars() {
 
 export function About(){
     return(
-        <section className="w-full h-[80vh] bg-gray-200 flex justify-center items-center" id="About">
-            <div className="w-full h-full shadow-lg rounded-xl flex flex-col justify-evenly items-center">
-              <hr className="w-full"/>
+        <section className="w-full min-h-[50vh] h-fit flex justify-center items-center p-[5vh]" id="About">
+            <div className="w-full h-[75vh] shadow-lg rounded-xl flex flex-col justify-evenly items-center p-[10vh]">
+              <hr className="w-[90%]"/>
                 <h1 className="text-4xl font-bold mb-6 text-center">
                     About Us
                 </h1>
 
-                <p className="text-xl text-center max-w-5xl mx-auto mb-6">
+                <p className="text-xl text-center w-[90%] mx-auto mb-6">
                     MLT Car Rental is a platform created to provide a simple,
                     affordable, and accessible car rental experience. Our goal
                     is to help users easily explore vehicles and choose the
                     perfect ride for their journey.
                 </p>
 
-                <p className="text-xl text-center max-w-6xl mx-auto mb-6">
+                <p className="text-xl text-center w-[90%] mx-auto mb-6">
                     This website is designed with accessibility in mind,
                     supporting clear layouts, readable text, and navigation
                     that can be easily used by people with visual impairments.
@@ -161,7 +161,7 @@ export function About(){
                     </a>
 
                 </div>
-              <hr className="w-full"/>
+              <hr className="w-[90%]"/>
             </div>
         </section>
     )
