@@ -41,7 +41,7 @@ function App() {
         <Route path="/" element={<Landing_Page logged={logged}/>}/>
         <Route path="/login" element={<Login setNavDisplay={setNavDisplay} setLog={setLog}/>}/>
         <Route path="/signup" element={<Signup setNavDisplay={setNavDisplay}/>}/>
-        <Route path="/rental" element={<Rental_page/>}/>
+        <Route path="/rental" element={<Rental_page setNavDisplay={setNavDisplay}/>}/>
       </Routes>
     </BrowserRouter>
   )
