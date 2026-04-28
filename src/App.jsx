@@ -4,6 +4,7 @@ import { Nav } from "./nav";
 import { Login } from "./login"
 import { useEffect, useState } from "react";
 import { Signup } from "./signup";
+import { Rental_page } from "./rental_page";
 import axios from "axios";
 
 function App() {
@@ -40,6 +41,7 @@ function App() {
         <Route path="/" element={<Landing_Page logged={logged}/>}/>
         <Route path="/login" element={<Login setNavDisplay={setNavDisplay} setLog={setLog}/>}/>
         <Route path="/signup" element={<Signup setNavDisplay={setNavDisplay}/>}/>
+        <Route path="/rental" element={<Rental_page/>}/>
       </Routes>
     </BrowserRouter>
   )

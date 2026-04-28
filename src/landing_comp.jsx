@@ -111,7 +111,7 @@ export function Cars({logged}) {
                   <h3 className="font-semibold my-0.75">Transmission: {details.transmission}</h3>
                   <h3 className="font-semibold my-0.75">Model Year: {details.year}</h3>
                   <h3 className="font-semibold my-0.75">Daily Rate: {details.daily_rate}</h3>
-                  <button className="w-[30%] h-[7.5vh] rounded-lg bg-blue-500 text-white mt-auto ml-auto hover:bg-blue-800 transition duration-100 ease-in-out hover:scale-[1.025]" onClick={()=>setDetails(car)}>
+                  <button className="w-[30%] h-[7.5vh] rounded-lg bg-blue-500 text-white mt-auto ml-auto hover:bg-blue-800 transition duration-100 ease-in-out hover:scale-[1.025]" onClick={()=>navigate("/rental", { state: { car: details } })}>
                   Rent
                   </button>
                 </>
