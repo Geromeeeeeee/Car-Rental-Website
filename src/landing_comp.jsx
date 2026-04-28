@@ -99,10 +99,12 @@ export function Cars({logged}) {
       {details && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50" onClick={()=>setDetails(null)}>
           <div className="w-[65vw] h-[85vh] bg-white rounded-xl shadow-lg flex items-center justify-center">
-            <div className="w-[40%] h-full bg-gray-300">
-                <img src={`http://localhost/vnm-system1-copy/php/cars/uploads/cars/${details.image}`} alt="" className="w-full h-full overflow-hidden object-cover"/>
+            <div className="w-[45%] h-full bg-gray-300 grid-cols-2 grid">
+                {details.additional_images?.split(',').map((img, index)=>(
+                  <img src={`http://localhost/vnm-system1-copy/php/cars/uploads/cars/${img}`} className="h-full object-cover"/>
+                ))}
             </div>
-            <div className="w-[60%] h-full p-7.5 flex flex-col">
+            <div className="w-[55%] h-full p-7.5 flex flex-col">
               {logged ? (
                 <>
                   <h1 className="text-center text-3xl font-bold w-full ">{details.model}</h1>
