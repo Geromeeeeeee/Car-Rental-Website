@@ -2,6 +2,7 @@ import { useState, useEffect } from "react"
 import axios from "axios"
 import { FaFacebook, FaPhone, FaEnvelope } from "react-icons/fa"
 import { useNavigate } from "react-router-dom";
+import { useRef } from 'react';
 
 export function Home(){
     return(
@@ -51,6 +52,7 @@ export function Cars({logged}) {
   const [featured, setFeat] = useState([]);
   const [details, setDetails] = useState(null);
   const navigate = useNavigate();
+  const scrollRef = useRef(null);
 
   useEffect(() => {
     const fetch_results = async () => {
@@ -67,7 +69,7 @@ export function Cars({logged}) {
   return (
     <>
       <section className="w-full h-screen flex items-center justify-center">
-        <div className="carousel w-full overflow-x-scroll overflow-y-hidden h-[90%] flex items-center justify-start">
+        <div className="carousel w-full overflow-x-scroll overflow-y-hidden h-[95%] flex items-center justify-start [&::-webkit-scrollbar]:hidden snap-x snap-mandatory px-7.75" ref={scrollRef}>
           {cars?.map((car) => (
             <div
               key={car.car_id}
@@ -94,6 +96,19 @@ export function Cars({logged}) {
             </div>
           ))}
         </div>
+        <button 
+          onClick={() => scrollRef.current.scrollBy({ left: -400, behavior: 'smooth' })}
+          className="absolute left-4 z-20 p-4 bg-blue-500 text-white rounded-full group-hover:block"
+        >
+          ←
+        </button>
+        
+        <button 
+          onClick={() => scrollRef.current.scrollBy({ left: 400, behavior: 'smooth' })}
+          className="absolute right-4 z-20 p-4 bg-blue-500 text-white rounded-full group-hover:block"
+        >
+          →
+        </button>
       </section>
 
       {details && (
