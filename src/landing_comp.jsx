@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react"
 import axios from "axios"
 import { FaFacebook, FaPhone, FaEnvelope } from "react-icons/fa"
+import { useNavigate } from "react-router-dom";
 
 export function Home(){
     return(
@@ -45,14 +46,11 @@ export function Home(){
     )
 }
 
-export function Cars() {
+export function Cars({logged}) {
   const [cars, setCars] = useState([]);
   const [featured, setFeat] = useState([]);
-  const [details, setDetails] = useState(false);
-
-  const showDetails = () => {
-    setDetails(true);
-  };
+  const [details, setDetails] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetch_results = async () => {
@@ -73,24 +71,24 @@ export function Cars() {
           {cars?.map((car) => (
             <div
               key={car.car_id}
-              className="w-[30%] h-[80%] shrink-0 m-[2.5vh] flex justify-center items-end rounded-2xl overflow-hidden shadow-[0px_0px_10px_0px_rgba(0,0,0,0.25)] hover:scale-[1.05] transition duration-250 ease-in-out hover:bg-white/75"
+              className="w-[30%] h-[80%] shrink-0 m-[2.5vh] flex justify-center items-end rounded-2xl overflow-hidden shadow-[0px_0px_10px_0px_rgba(0,0,0,0.25)] hover:scale-[1.025] transition duration-250 ease-in-out hover:bg-white/75"
               style={{
-                backgroundImage: `url(http://localhost/vnm-system1/php/cars/uploads/cars/${car.image})`,
+                backgroundImage: `url(http://localhost/vnm-system1-copy/php/cars/uploads/cars/${car.image})`,
                 backgroundSize: "cover",
                 backgroundPosition: "center",
               }}
             >
               <div className="w-full h-[70%] flex items-end bg-linear-to-t from-white to-transparent p-2.5">
                 <div className="w-full h-[50%] flex flex-col justify-around items-center">
-                  <h1 className="text-[4.5vh] font-bold text-black drop-shadow-lg">
-                    {car.model}
-                  </h1>
                   <button
                     className="w-[40%] h-[40%] bg-blue-500 rounded-2xl text-white hover:bg-blue-800 transition duration-100 ease-in-out hover:scale-[1.025]"
-                    onClick={showDetails}
+                    onClick={()=>setDetails(car)}
                   >
                     View Details
                   </button>
+                  <h1 className="text-[4.5vh] font-bold text-black drop-shadow-lg">
+                    {car.model}
+                  </h1>
                 </div>
               </div>
             </div>
@@ -99,9 +97,39 @@ export function Cars() {
       </section>
 
       {details && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50" onClick={()=>setDetails(false)}>
-          <div className="w-[50vw] h-[50vh] bg-green-400 rounded-xl shadow-lg p-4">
-            
+        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50" onClick={()=>setDetails(null)}>
+          <div className="w-[65vw] h-[85vh] bg-white rounded-xl shadow-lg flex items-center justify-center">
+            <div className="w-[40%] h-full bg-gray-300">
+                <img src={`http://localhost/vnm-system1-copy/php/cars/uploads/cars/${details.image}`} alt="" className="w-full h-full overflow-hidden object-cover"/>
+            </div>
+            <div className="w-[60%] h-full p-7.5 flex flex-col">
+              {logged ? (
+                <>
+                  <h1 className="text-center text-3xl font-bold w-full ">{details.model}</h1>
+                  <p className="text-justify text-base my-7.5">{details.description}</p>
+                  <h3 className="font-semibold my-0.75">Fuel Type: {details.fuel_type}</h3>
+                  <h3 className="font-semibold my-0.75">Transmission: {details.transmission}</h3>
+                  <h3 className="font-semibold my-0.75">Model Year: {details.year}</h3>
+                  <h3 className="font-semibold my-0.75">Daily Rate: {details.daily_rate}</h3>
+                  <button className="w-[30%] h-[7.5vh] rounded-lg bg-blue-500 text-white mt-auto ml-auto hover:bg-blue-800 transition duration-100 ease-in-out hover:scale-[1.025]" onClick={()=>setDetails(car)}>
+                  Rent
+                  </button>
+                </>
+              ) : 
+              (
+              <>
+              <h1 className="text-center text-3xl font-bold w-full ">{details.model}</h1>
+              <p className="text-justify text-base my-7.5">{details.description}</p>
+              <h3 className="font-semibold my-0.75">Fuel Type: {details.fuel_type}</h3>
+              <h3 className="font-semibold my-0.75">Transmission: {details.transmission}</h3>
+              <h3 className="font-semibold my-0.75">Model Year: {details.year}</h3>
+              <h3 className="font-semibold my-0.75">Daily Rate: {details.daily_rate}</h3>
+              <button className="w-fit h-[7.5vh] p-2.5 rounded-lg bg-blue-500 text-white mt-auto ml-auto hover:bg-blue-800 transition duration-100 ease-in-out hover:scale-[1.025]" onClick={()=>navigate("/login")}>
+                Login/Signup to Rent
+              </button>
+              </>
+            )}
+            </div>
           </div>
         </div>
       )}
