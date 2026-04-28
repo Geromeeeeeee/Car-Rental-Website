@@ -53,6 +53,7 @@ export function Cars({logged}) {
   const [details, setDetails] = useState(null);
   const navigate = useNavigate();
   const scrollRef = useRef(null);
+  const modalScroll = useRef(null)
 
   useEffect(() => {
     const fetch_results = async () => {
@@ -114,10 +115,25 @@ export function Cars({logged}) {
       {details && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50" onClick={()=>setDetails(null)}>
           <div className="w-[65vw] h-[85vh] bg-white rounded-xl shadow-lg flex items-center justify-center">
-            <div className="w-[45%] h-full bg-gray-300 grid-cols-2 grid">
+            <div className="w-[45%] h-full bg-gray-300 relative">
+              <div className="h-full w-full flex overflow-x-scroll snap-x snap-mandatory [&::-webkit-scrollbar]:hidden" ref={modalScroll}>
                 {details.additional_images?.split(',').map((img, index)=>(
-                  <img src={`http://localhost/vnm-system1-copy/php/cars/uploads/cars/${img}`} className="h-full object-cover"/>
+                  <img src={`http://localhost/vnm-system1-copy/php/cars/uploads/cars/${img}`} className="h-full object-cover shrink-0 snap-center"/>
                 ))}
+              </div>
+                <button 
+                  onClick={(e) => {e.stopPropagation(); modalScroll.current.scrollBy({ left: -modalScroll.current.offsetWidth, behavior: 'smooth' })}}
+                  className="absolute top-[50%] translate-y-[-50%] left-2 z-20 w-fit px-5 py-2 bg-blue-500 text-white rounded-full group-hover:block"
+                >
+                  ←
+                </button>
+                
+                <button 
+                  onClick={(e) => {e.stopPropagation(); modalScroll.current.scrollBy({ left: modalScroll.current.offsetWidth, behavior: 'smooth' })}}
+                  className="absolute top-[50%] translate-y-[-50%] right-2 z-20 w-fit px-5 py-2  bg-blue-500 text-white rounded-full group-hover:block"
+                >
+                  →
+                </button>
             </div>
             <div className="w-[55%] h-full p-7.5 flex flex-col">
               {logged ? (
