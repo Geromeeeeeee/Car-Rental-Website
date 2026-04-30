@@ -99,14 +99,14 @@ export function Cars({logged}) {
         </div>
         <button 
           onClick={() => scrollRef.current.scrollBy({ left: -400, behavior: 'smooth' })}
-          className="absolute left-4 z-20 p-4 bg-blue-500 text-white rounded-full group-hover:block"
+          className="absolute left-4 z-20 px-4 py-2 bg-blue-500/50 hover:bg-blue-500 hover:scale-[1.125] transition-all duration-150 text-white rounded-full group-hover:block"
         >
           ←
         </button>
         
         <button 
           onClick={() => scrollRef.current.scrollBy({ left: 400, behavior: 'smooth' })}
-          className="absolute right-4 z-20 p-4 bg-blue-500 text-white rounded-full group-hover:block"
+          className="absolute right-4 z-20 px-4 py-2 bg-blue-500/50 hover:bg-blue-500 hover:scale-[1.125] transition-all duration-150 text-white rounded-full group-hover:block"
         >
           →
         </button>
@@ -123,14 +123,14 @@ export function Cars({logged}) {
               </div>
                 <button 
                   onClick={(e) => {e.stopPropagation(); modalScroll.current.scrollBy({ left: -modalScroll.current.offsetWidth, behavior: 'smooth' })}}
-                  className="absolute top-[50%] translate-y-[-50%] left-2 z-20 w-fit px-5 py-2 bg-blue-500 text-white rounded-full group-hover:block"
+                  className="absolute top-[50%] translate-y-[-50%] left-2 z-20 w-fit px-2.5 py-1.5 bg-blue-500/50 hover:bg-blue-500 hover:scale-[1.125] transition-all duration-150 text-white rounded-full group-hover:block"
                 >
                   ←
                 </button>
                 
                 <button 
                   onClick={(e) => {e.stopPropagation(); modalScroll.current.scrollBy({ left: modalScroll.current.offsetWidth, behavior: 'smooth' })}}
-                  className="absolute top-[50%] translate-y-[-50%] right-2 z-20 w-fit px-5 py-2  bg-blue-500 text-white rounded-full group-hover:block"
+                  className="absolute top-[50%] translate-y-[-50%] right-2 z-20 w-fit px-2.5 py-1.5  bg-blue-500/50 hover:bg-blue-500 hover:scale-[1.125] transition-all duration-150 text-white rounded-full group-hover:block"
                 >
                   →
                 </button>

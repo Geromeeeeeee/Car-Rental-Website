@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { useState } from "react"
 import axios from "axios"
 
@@ -26,7 +26,7 @@ export function Nav({navDisplay, logged, setLog}){
             <div className="h-full w-[50%] flex items-center">
                 <img src="/src/assets/MLT_logo.png" alt="Logo" className="h-[200%] aspect-square"/>
                 <div className="flex space-x-6 ml-10">
-                    <a href="#" className="hover:text-gray-500 text-xl px-3 py-2 rounded-lg hover:shadow-md hover:bg-gray-100 transition-all duration-300">Home</a>
+                    <Link to={"/"} className="hover:text-gray-500 text-xl px-3 py-2 rounded-lg hover:shadow-md hover:bg-gray-100 transition-all duration-300">Home</Link>
                     <a href="#" className="hover:text-gray-500 text-xl px-3 py-2 rounded-lg hover:shadow-md hover:bg-gray-100 transition-all duration-300">Cars</a>
                     <a href="#About" className="hover:text-gray-500 text-xl px-3 py-2 rounded-lg hover:shadow-md hover:bg-gray-100 transition-all duration-300">About</a>
                     <a href="#" className="hover:text-gray-500 text-xl px-3 py-2 rounded-lg hover:shadow-md hover:bg-gray-100 transition-all duration-300">Rental History</a>
@@ -67,7 +67,7 @@ export function Nav({navDisplay, logged, setLog}){
             <div className="h-full w-[50%] flex items-center">
                 <img src="/src/assets/MLT_logo.png" alt="Logo" className="h-[200%] aspect-square"/>
                 <div className="flex space-x-6 ml-10">
-                    <a href="#" className="hover:text-gray-500 text-xl px-3 py-2 rounded-lg hover:shadow-md hover:bg-gray-100 transition-all duration-300">Home</a>
+                    <Link to={"/"} className="hover:text-gray-500 text-xl px-3 py-2 rounded-lg hover:shadow-md hover:bg-gray-100 transition-all duration-300">Home</Link>
                     <a href="#About" className="hover:text-gray-500 text-xl px-3 py-2 rounded-lg hover:shadow-md hover:bg-gray-100 transition-all duration-300">About</a>
                     <a href="#" className="hover:text-gray-500 text-xl px-3 py-2 rounded-lg hover:shadow-md hover:bg-gray-100 transition-all duration-300">Cars</a>
                 </div>
