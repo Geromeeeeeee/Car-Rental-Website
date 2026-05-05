@@ -38,10 +38,15 @@ export function RentalForm(){
         }
     },[carDetails?.car_id])
 
-    const excluded_dates = bookedDates.map(range=>({
-        start: new Date(range.start_date),
-        end: new Date(range.end_date)
-    }))
+    const excluded_dates = bookedDates.map(range=>{
+        const start = new Date (range.start_date)
+        const end = new Date (range.end_date)
+
+        start.setHours(0, 0, 0, 0);
+        end.setHours(23, 59, 59, 999);
+
+        return{start: start, end: end}
+    })
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -66,11 +71,18 @@ export function RentalForm(){
             }
 
             const req_stat = rentalDetail.data.request_stat
+            const error = rentalDetail.data.error
             if(req_stat === true){
                 alert("Request now pending")
                 nav("/")
             } else{
-                alert("Error")
+                if(error === 'overlap'){
+                    alert("Rental date overlaps with future booked dates")
+                } else if (error === 'duration'){
+                    alert("Duration must be greater than 0")
+                } else {
+                    alert("Error")
+                }
             }
             
         } catch (error) {
@@ -105,7 +117,7 @@ export function RentalForm(){
                 <input type="time" name="" id="" className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 mb-2.5" placeholder="Pickup Time" onChange={(e)=>setTime(e.target.value)} value={time}/>
 
                 <label htmlFor="duration">Duration/Days</label>
-                <input type="number" name="" id="" className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 mb-2.5" onChange={(e)=>setDuration(e.target.value)} value={duration}/>
+                <input type="number" name="" id="" min="1" className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 mb-2.5" onChange={(e)=>setDuration(e.target.value)} value={duration}/>
 
                 <label htmlFor="price">Total Price: </label>
                 <input type="number" name="" id="" value={totalPrice} readOnly required className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 mb-2.5"/>
