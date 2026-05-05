@@ -114,7 +114,13 @@ export function RentalForm(){
                 className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 mb-2.5"/>
 
                 <label htmlFor="time">Pickup Time: </label>
-                <input type="time" name="" id="" className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 mb-2.5" placeholder="Pickup Time" onChange={(e)=>setTime(e.target.value)} value={time}/>
+                <select name="time" id="time" className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 mb-2.5" onChange={(e)=>setTime(e.target.value)} value={time}>
+                    <option value="">Select Time</option>
+                    <option value="08:00">8:00 AM</option>
+                    <option value="10:00">10:00 AM</option>
+                    <option value="12:00">12:00 PM</option>
+                    <option value="14:00">2:00 PM</option>
+                </select>
 
                 <label htmlFor="duration">Duration/Days</label>
                 <input type="number" name="" id="" min="1" className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 mb-2.5" onChange={(e)=>setDuration(e.target.value)} value={duration}/>
