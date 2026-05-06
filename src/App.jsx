@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { Signup } from "./signup";
 import { Rental_page } from "./rental_page";
 import axios from "axios";
+import { Rental_History } from "./rental_history";
 
 function App() {
 
@@ -42,6 +43,7 @@ function App() {
         <Route path="/login" element={<Login setNavDisplay={setNavDisplay} setLog={setLog}/>}/>
         <Route path="/signup" element={<Signup setNavDisplay={setNavDisplay}/>}/>
         <Route path="/rental" element={<Rental_page setNavDisplay={setNavDisplay}/>}/>
+        <Route path="/rental_history" element={<Rental_History setNavDisplay={setNavDisplay}/>}/>
       </Routes>
     </BrowserRouter>
   )
