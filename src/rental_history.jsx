@@ -1,4 +1,4 @@
-import { Pending, Active, Cancelled } from "./rental_history_comp";
+import { Rental_History_Block } from "./rental_history_comp";
 import { useState, useEffect } from "react";
 import axios from "axios";
 
@@ -17,9 +17,9 @@ export function Rental_History(){
     const cancelled = history.filter(request => request.request_status === 'Cancelled')
     return(
         <>
-            <Pending list={pending}/>
-            <Active list={active}/>
-            <Cancelled list={cancelled}/>
+            <Rental_History_Block type="Pending" list={pending}/>
+            <Rental_History_Block type="Active" list={active}/>
+            <Rental_History_Block type="Cancelled" list={cancelled}/>
         </>
     )
 }
