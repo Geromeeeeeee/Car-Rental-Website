@@ -13,12 +13,13 @@ export function Rental_History(){
     }, [])
 
     const pending = history.filter(request => request.request_status === 'Pending')
-    const active = history.filter(request => request.request_status === 'Approved')
+    const approved = history.filter(request => request.request_status === 'Approved')
     const cancelled = history.filter(request => request.request_status === 'Cancelled')
+
     return(
         <>
             <Rental_History_Block type="Pending" list={pending}/>
-            <Rental_History_Block type="Active" list={active}/>
+            <Rental_History_Block type="Approved" list={approved}/>
             <Rental_History_Block type="Cancelled" list={cancelled}/>
         </>
     )
