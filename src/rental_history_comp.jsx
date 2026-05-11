@@ -1,4 +1,5 @@
 import axios from "axios"
+import { useNavigate } from "react-router-dom"
 
 const dateFormatter = new Intl.DateTimeFormat('en-US', {
     year: "numeric",
@@ -13,6 +14,7 @@ const return_date = (startDate, duration) =>{
 }
 
 export function Rental_History_Block({type, list}){
+    const nav = useNavigate()
     return(
         <>
         <div className="flex flex-col h-fit w-full p-2.5 box-border justify-center items-center">
@@ -56,7 +58,7 @@ export function Rental_History_Block({type, list}){
                                 stat_button = (
                                     <div className="ml-auto h-100% w-fit flex items-center justify-center">
                                         <div className="ml-auto h-100% w-fit flex items-center justify-center">
-                                            <button className="log-in w-[fit] h-[fit] p-2.5 transition duration-150ms ease-in-out bg-blue-500 text-white font-bold rounded-lg text-l hover:scale-[1.075] hover:bg-blue-800 m-2.5">
+                                            <button className="log-in w-[fit] h-[fit] p-2.5 transition duration-150ms ease-in-out bg-blue-500 text-white font-bold rounded-lg text-l hover:scale-[1.075] hover:bg-blue-800 m-2.5" onClick={()=>nav("/payment_form", {state:{paymentDetails: requests}})}>
                                                 Payment
                                             </button>  
 

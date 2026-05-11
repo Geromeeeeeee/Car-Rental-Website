@@ -1,12 +1,13 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom"
+import axios from "axios";
+import { useEffect, useState } from "react";
 import { Landing_Page} from "./landing_page"
 import { Nav } from "./nav";
 import { Login } from "./login"
-import { useEffect, useState } from "react";
 import { Signup } from "./signup";
 import { Rental_page } from "./rental_page";
-import axios from "axios";
 import { Rental_History } from "./rental_history";
+import { Payment_Page } from "./payment_page";
 
 function App() {
 
@@ -44,6 +45,7 @@ function App() {
         <Route path="/signup" element={<Signup setNavDisplay={setNavDisplay}/>}/>
         <Route path="/rental" element={<Rental_page setNavDisplay={setNavDisplay}/>}/>
         <Route path="/rental_history" element={<Rental_History setNavDisplay={setNavDisplay}/>}/>
+        <Route path="/payment_form" element={<Payment_Page setNavDisplay={setNavDisplay}/>}/>
       </Routes>
     </BrowserRouter>
   )

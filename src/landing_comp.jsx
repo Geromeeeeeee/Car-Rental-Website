@@ -136,32 +136,17 @@ export function Cars({logged}) {
                 </button>
             </div>
             <div className="w-[55%] h-full p-7.5 flex flex-col">
-              {logged ? (
-                <>
-                  <h1 className="text-center text-3xl font-bold w-full ">{details.model}</h1>
-                  <p className="text-justify text-base my-7.5">{details.description}</p>
-                  <h3 className="font-semibold my-0.75">Fuel Type: {details.fuel_type}</h3>
-                  <h3 className="font-semibold my-0.75">Transmission: {details.transmission}</h3>
-                  <h3 className="font-semibold my-0.75">Model Year: {details.year}</h3>
-                  <h3 className="font-semibold my-0.75">Daily Rate: {details.daily_rate}</h3>
-                  <button className="w-[30%] h-[7.5vh] rounded-lg bg-blue-500 text-white mt-auto ml-auto hover:bg-blue-800 transition duration-100 ease-in-out hover:scale-[1.025]" onClick={()=>navigate("/rental", { state: { car: details } })}>
-                  Rent
-                  </button>
-                </>
-              ) : 
-              (
-              <>
               <h1 className="text-center text-3xl font-bold w-full ">{details.model}</h1>
               <p className="text-justify text-base my-7.5">{details.description}</p>
               <h3 className="font-semibold my-0.75">Fuel Type: {details.fuel_type}</h3>
               <h3 className="font-semibold my-0.75">Transmission: {details.transmission}</h3>
               <h3 className="font-semibold my-0.75">Model Year: {details.year}</h3>
               <h3 className="font-semibold my-0.75">Daily Rate: {details.daily_rate}</h3>
-              <button className="w-fit h-[7.5vh] p-2.5 rounded-lg bg-blue-500 text-white mt-auto ml-auto hover:bg-blue-800 transition duration-100 ease-in-out hover:scale-[1.025]" onClick={()=>navigate("/login")}>
-                Login/Signup to Rent
+             
+              <button className="w-[30%] h-[7.5vh] rounded-lg bg-blue-500 text-white mt-auto ml-auto hover:bg-blue-800 transition duration-100 ease-in-out hover:scale-[1.025]" 
+              onClick={logged ? ()=>navigate("/rental", { state: { car: details } }) : ()=>navigate("/login")}>
+              {logged ? "Rent" : "Login/Signup"}
               </button>
-              </>
-            )}
             </div>
           </div>
         </div>

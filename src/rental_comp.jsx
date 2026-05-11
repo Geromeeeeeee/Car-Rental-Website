@@ -66,7 +66,7 @@ export function RentalForm(){
                 {withCredentials: true}
             )
             const logged = rentalDetail.data.logged_in
-            if(logged === false){
+            if(logged_in === false){
                 nav("/")
             }
 
@@ -131,15 +131,9 @@ export function RentalForm(){
                 <label htmlFor="licensePhoto">Driver's License</label>
                 <input type="file" name="" id="" required className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 mb-2.5" onChange={(e)=>setPhoto(e.target.files[0])}/>
 
-                {missingField ? 
-                <button type="submit" disabled={true} className="w-full bg-gray-500 text-white py-2 rounded-lg font-bold mt-auto">
+                <button type="submit" disabled={missingField} className={`w-full text-white py-2 rounded-lg font-bold mt-auto ${missingField ? "bg-gray-500 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-700 transition duration-300 mt-auto"}`}>
                     Confirm
                 </button>
-                 : 
-                <button type="submit" className="w-full bg-blue-500 text-white py-2 rounded-lg font-bold hover:bg-blue-700 transition duration-300 mt-auto">
-                    Confirm
-                </button>
-                }
             </form>
         </div>
     )
