@@ -51,6 +51,11 @@ export function Rental_History_Block({type, list}){
                         if (type==="Pending") {
                             stat_button = (
                                 <div className="ml-auto h-100% w-fit flex items-center justify-center">
+                                    {(requests.request_status === 'Approved' && requests.payment_status === 'Unpaid') && (
+                                    <button className="log-in w-[fit] h-[fit] p-2.5 transition duration-150ms ease-in-out bg-blue-500 text-white font-bold rounded-lg text-l hover:scale-[1.075] hover:bg-blue-800 m-2.5" onClick={()=>nav("/payment_form", {state:{paymentDetails: requests}})}>
+                                        Payment
+                                    </button>
+                                    )}
                                     {cancelButton}  
                                 </div>
                             )
@@ -58,10 +63,6 @@ export function Rental_History_Block({type, list}){
                                 stat_button = (
                                     <div className="ml-auto h-100% w-fit flex items-center justify-center">
                                         <div className="ml-auto h-100% w-fit flex items-center justify-center">
-                                            <button className="log-in w-[fit] h-[fit] p-2.5 transition duration-150ms ease-in-out bg-blue-500 text-white font-bold rounded-lg text-l hover:scale-[1.075] hover:bg-blue-800 m-2.5" onClick={()=>nav("/payment_form", {state:{paymentDetails: requests}})}>
-                                                Payment
-                                            </button>  
-
                                             {cancelButton}
                                         </div>  
                                     </div>

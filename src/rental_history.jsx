@@ -12,12 +12,14 @@ export function Rental_History(){
         getHistory()
     }, [])
 
-    const pending = history.filter(request => request.request_status === 'Pending')
-    const approved = history.filter(request => request.request_status === 'Approved')
+    const pending = history.filter(request => request.request_status === 'Pending' || (request.request_status === 'Approved' && request.payment_status === 'Unpaid'))
+    const approved = history.filter(request => request.request_status === 'Approved' && request.payment_status=== 'Paid')
     const cancelled = history.filter(request => request.request_status === 'Cancelled')
+    const paid = history.filter(request => request.payment_status === 'Proof Uploaded')
 
     return(
         <>
+            <Rental_History_Block type="Paid" list={paid}/>
             <Rental_History_Block type="Pending" list={pending}/>
             <Rental_History_Block type="Approved" list={approved}/>
             <Rental_History_Block type="Cancelled" list={cancelled}/>
