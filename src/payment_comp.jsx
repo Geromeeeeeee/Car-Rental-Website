@@ -6,8 +6,28 @@ export function PaymentForm(){
     const location = useLocation()
     const [method, setMethod] = useState("")
     const [proof, setProof] = useState("")
+    const [ref, setRef] = useState("")
     const {paymentDetails} = location.state || {}
     const missingField = !method || !proof
+
+    const payment = async (e) => {
+        if(missingField){
+            alert("Fill all required fields!")
+            return
+        }
+        try{
+            const formData = new FormData();
+            formData.append("action", "payment")
+            formData.append("method", method)
+            formData.append("proof", proof)
+            formData.append("ref", ref)
+            formData.append("reqID", paymentDetails.request_ID)
+
+            const response = await axios.post('http://localhost/Car-Rental-Website/back/login_signup.php')
+        }catch{
+
+        }
+    }
 
     return(
         <>
@@ -38,6 +58,9 @@ export function PaymentForm(){
 
                 <label htmlFor="proof">Proof of Payment: </label>
                 <input type="file" name="" id="" required className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 mb-2.5" onChange={(e)=>setProof(e.target.files[0])}/>
+
+                <label htmlFor="ref">Payment Reference No.</label>
+                <input type="number" name="" id="" min="1" required className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 mb-2.5" onChange={(e)=>setRef(e.target.value)}/>
 
                 <button type="submit" disabled={missingField} className={`w-full text-white py-2 rounded-lg font-bold mt-auto ${missingField ? "bg-gray-500 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-700 transition duration-300 mt-auto"}`}>
                     Complete Payment
