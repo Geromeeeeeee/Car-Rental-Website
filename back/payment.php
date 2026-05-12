@@ -19,6 +19,10 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
     $payment_proof = uniqid(). "." . $ext;
     $proof_path = $photo_dir . $payment_proof;
     
+    if(!is_dir($photo_dir)){
+        mkdir($photo_dir, 0755, true);
+    }
+    
     if(move_uploaded_file($photo['tmp_name'], $proof_path)){
         if($action==='payment'){
             $payment_query = "UPDATE rental_requests 
@@ -32,11 +36,12 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
             $payment_stmt->bind_param("sssii", $proof_path, $method, $ref, $uID, $reqID);
 
             if($payment_stmt->execute()){
-                echo json_encode(['request_stat' => true]);
+                echo json_encode(['payment' => true]);
                 $payment_stmt->close();
+
                 exit();
             } else {
-                echo json_encode(['request_stat' => false]);
+                echo json_encode(['payment' => false]);
                 $payment_stmt->close();
                 exit();
             }

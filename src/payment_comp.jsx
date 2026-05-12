@@ -1,16 +1,19 @@
 import axios from "axios";
 import { useState } from "react";
 import { useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export function PaymentForm(){
     const location = useLocation()
+    const navigate = useNavigate()
     const [method, setMethod] = useState("")
-    const [proof, setProof] = useState("")
+    const [proof, setProof] = useState(null)
     const [ref, setRef] = useState("")
     const {paymentDetails} = location.state || {}
-    const missingField = !method || !proof
+    const missingField = !method || !proof || !ref
 
     const payment = async (e) => {
+        e.preventDefault()
         if(missingField){
             alert("Fill all required fields!")
             return
@@ -21,11 +24,19 @@ export function PaymentForm(){
             formData.append("method", method)
             formData.append("proof", proof)
             formData.append("ref", ref)
-            formData.append("reqID", paymentDetails.request_ID)
+            formData.append("reqID", paymentDetails.request_id)
 
-            const response = await axios.post('http://localhost/Car-Rental-Website/back/login_signup.php', formData, {withCredentials: true})
+            const response = await axios.post('http://localhost/Car-Rental-Website/back/payment.php', formData, {withCredentials: true})
+
         }catch{
-
+            alert("Eror")
+        }
+        const status = response.data.payment
+        if(status){
+            alert("Payment Processed")
+            navigate("/")
+        } else {
+            alert ("Processing Error")
         }
     }
 
@@ -41,7 +52,7 @@ export function PaymentForm(){
                     </div>
                 )}
             </div>
-            <form action="" className="w-[60%] h-full px-7.5 flex flex-col">
+            <form onSubmit={payment} className="w-[60%] h-full px-7.5 flex flex-col">
                 <legend className="text-center text-3xl font-bold w-full ">Payment Summary</legend>
                 <label htmlFor="model">Model: </label>
                 <input type="text" name="" id="" value={paymentDetails.model} readOnly required className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 mb-2.5"/>
@@ -57,12 +68,12 @@ export function PaymentForm(){
                 </select>
 
                 <label htmlFor="proof">Proof of Payment: </label>
-                <input type="file" name="" id="" required className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 mb-2.5" onChange={(e)=>setProof(e.target.files[0])}/>
+                <input type="file" name="proof" id="" required className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 mb-2.5" onChange={(e)=>setProof(e.target.files[0])}/>
 
                 <label htmlFor="ref">Payment Reference No.</label>
-                <input type="text" name="" id="" min="1" required className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 mb-2.5" onChange={(e)=>setRef(e.target.value)} maxLength={method === 'gcash' ? 13 : 16} minLength={method === 'gcash' ? 13 : 16}/>
+                <input type="text" name="ref" id="ref" min="1" required className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 mb-2.5" onChange={(e)=>setRef(e.target.value)} maxLength={method === 'gcash' ? 13 : 16} minLength={method === 'gcash' ? 13 : 16}/>
 
-                <button type="submit" disabled={missingField} className={`w-full text-white py-2 rounded-lg font-bold mt-auto ${missingField ? "bg-gray-500 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-700 transition duration-300 mt-auto"}`}>
+                <button type="submit" className={`w-full text-white py-2 rounded-lg font-bold mt-auto ${missingField ? "bg-gray-500 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-700 transition duration-300 mt-auto"}`}>
                     Complete Payment
                 </button>
             </form>
