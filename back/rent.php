@@ -64,7 +64,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
                     $photo = $_FILES['photo'];
                     $requestStat = 'pending';
 
-                    $photo_dir = "C:/xampp/htdocs/vnm-system1-copy/uploads/licenses/";
+                    $photo_dir = "C:/xampp/htdocs/vnm-system1/uploads/licenses/";
                     $ext = pathinfo($photo['name'], PATHINFO_EXTENSION);
                     $license_pic = uniqid(). "." . $ext;
                     $license_path = $photo_dir . $license_pic;

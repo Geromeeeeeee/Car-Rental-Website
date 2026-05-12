@@ -14,7 +14,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
     $ref = $_POST['ref'];
     $photo = $_FILES['proof'];
 
-    $photo_dir = "C:/xampp/htdocs/vnm-system1-copy/uploads/payments/";
+    $photo_dir = "C:/xampp/htdocs/vnm-system1/uploads/payments/";
     $ext = pathinfo($photo['name'], PATHINFO_EXTENSION);
     $payment_proof = uniqid(). "." . $ext;
     $proof_path = $photo_dir . $payment_proof;
