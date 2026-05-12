@@ -21,8 +21,23 @@ if($_SERVER['REQUEST_METHOD'] === 'GET'){
         $history[] = $row;
     }
 
-    echo json_encode($history);
+    $fetch_active = "SELECT ar.pickup_id, ar.request_id, ar.pickup_date_actual, r.car_id, r.rental_date, r.rental_duration_days, r.total_cost, r.request_status, r.request_id, r.payment_status ,c.image, c.model FROM rental_pickup_details ar INNER JOIN rental_requests r ON ar.request_id = r.request_id INNER JOIN cars c ON r.car_id = c.car_id WHERE r.user_id = ?";
+    $active_stmt = $conn->prepare($fetch_active);
+    $active_stmt->bind_param("i", $user_id);
+    $active_stmt->execute();
+    $active_rental = $active_stmt->get_result();
+
+    $active = [];
+    while($row = mysqli_fetch_assoc($active_rental)){
+        $active[] = $row;
+    }
+
+    echo json_encode([
+        "history" => $history,
+        "active" => $active
+    ]);
     $fetch_stmt->close();
+    $active_stmt->close();
     exit();
 }
 
@@ -35,16 +50,15 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
         $cancel_query = "UPDATE rental_requests SET request_status = 'Cancelled' WHERE request_id = ? AND user_id = ? AND request_status IN ('Pending', 'Approved')";
         $cancel_query_stmt = $conn->prepare($cancel_query);
         $cancel_query_stmt->bind_param("ii", $request_id, $user_id);
-        $cancel_query_stmt->execute();
 
-        if(!$cancel_query_stmt->execute()){
-            echo json_encode(["cancelled"=>false]);
-            exit();
-        } else if ($cancel_query_stmt->execute()){
+        if($cancel_query_stmt->execute()){
             echo json_encode(["cancelled"=>true]);
-            $cancel_query_stmt->close();
-            exit();
+        } else {
+            echo json_encode(["cancelled"=>false]);
         }
+
+        $cancel_query_stmt->close();
+        exit();
     }
 }
 

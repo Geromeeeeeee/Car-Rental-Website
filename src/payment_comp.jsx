@@ -18,6 +18,7 @@ export function PaymentForm(){
             alert("Fill all required fields!")
             return
         }
+        let response
         try{
             const formData = new FormData();
             formData.append("action", "payment")
@@ -26,7 +27,7 @@ export function PaymentForm(){
             formData.append("ref", ref)
             formData.append("reqID", paymentDetails.request_id)
 
-            const response = await axios.post('http://localhost/Car-Rental-Website/back/payment.php', formData, {withCredentials: true})
+            response = await axios.post('http://localhost/Car-Rental-Website/back/payment.php', formData, {withCredentials: true})
 
         }catch{
             alert("Eror")
