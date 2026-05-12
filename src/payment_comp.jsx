@@ -23,7 +23,7 @@ export function PaymentForm(){
             formData.append("ref", ref)
             formData.append("reqID", paymentDetails.request_ID)
 
-            const response = await axios.post('http://localhost/Car-Rental-Website/back/login_signup.php')
+            const response = await axios.post('http://localhost/Car-Rental-Website/back/login_signup.php', formData, {withCredentials: true})
         }catch{
 
         }
@@ -60,7 +60,7 @@ export function PaymentForm(){
                 <input type="file" name="" id="" required className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 mb-2.5" onChange={(e)=>setProof(e.target.files[0])}/>
 
                 <label htmlFor="ref">Payment Reference No.</label>
-                <input type="number" name="" id="" min="1" required className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 mb-2.5" onChange={(e)=>setRef(e.target.value)}/>
+                <input type="text" name="" id="" min="1" required className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 mb-2.5" onChange={(e)=>setRef(e.target.value)} maxLength={method === 'gcash' ? 13 : 16} minLength={method === 'gcash' ? 13 : 16}/>
 
                 <button type="submit" disabled={missingField} className={`w-full text-white py-2 rounded-lg font-bold mt-auto ${missingField ? "bg-gray-500 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-700 transition duration-300 mt-auto"}`}>
                     Complete Payment

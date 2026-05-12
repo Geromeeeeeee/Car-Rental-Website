@@ -66,7 +66,7 @@ export function RentalForm(){
                 {withCredentials: true}
             )
             const logged = rentalDetail.data.logged_in
-            if(logged_in === false){
+            if(logged === false){
                 nav("/")
             }
 
