@@ -47,6 +47,17 @@ export function Rental_History_Block({type, list}){
                             </button> 
                         )
 
+                        const req_return = async () => {
+                            const send_return_req = await axios.post("http://localhost/Car-Rental-Website/back/rental_history.php", {action: "return", reqID: requests.request_id}, {withCredentials: true})
+
+                            if(send_return_req.data.return){
+                                 alert(`Return requested. Expected Refund: ${send_return_req.data.refund}`)
+                                window.location.reload()
+                            } else {
+                                alert("Error")
+                            }
+                        }
+
                         let stat_button
                         if (type==="Pending") {
                             stat_button = (
@@ -72,7 +83,8 @@ export function Rental_History_Block({type, list}){
                                 stat_button = (
                                     <div className="ml-auto h-100% w-fit flex items-center justify-center">
                                         <div className="ml-auto h-100% w-fit flex items-center justify-center">
-                                            <button className="log-in w-[fit] h-[fit] p-2.5 transition duration-150ms ease-in-out bg-blue-500 text-white font-bold rounded-lg text-l hover:scale-[1.075] hover:bg-blue-800 m-2.5">Early Return</button>
+                                            {requests.request_status === "Early Return Requested" ? (<button className="log-in w-[fit] h-[fit] p-2.5 transition duration-150ms ease-in-out bg-black/50 text-white font-bold rounded-lg text-l m-2.5">Early Return Requested</button>) : 
+                                            (<button className="log-in w-[fit] h-[fit] p-2.5 transition duration-150ms ease-in-out bg-blue-500 text-white font-bold rounded-lg text-l hover:scale-[1.075] hover:bg-blue-800 m-2.5" onClick={req_return}>Return</button>)}
                                         </div>  
                                     </div>
                                 )

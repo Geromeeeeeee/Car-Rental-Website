@@ -9,7 +9,7 @@ if(!isset($_SESSION['user_id'])){
 }
 
 if($_SERVER['REQUEST_METHOD'] === 'GET'){
-    $fetch_history = "SELECT r.car_id, r.rental_date, r.rental_duration_days, r.total_cost, r.request_status, r.request_id, r.payment_status ,c.image, c.model FROM rental_requests r INNER JOIN cars c ON r.car_id = c.car_id WHERE r.user_id = ? AND request_status IN ('Pending', 'Approved', 'Cancelled', 'Returned')";
+    $fetch_history = "SELECT r.car_id, r.rental_date, r.rental_duration_days, r.total_cost, r.request_status, r.request_id, r.payment_status ,c.image, c.model FROM rental_requests r INNER JOIN cars c ON r.car_id = c.car_id WHERE r.user_id = ? AND request_status IN ('Pending', 'Approved', 'Cancelled', 'Returned','Early Return Requested')";
     $fetch_stmt = $conn->prepare($fetch_history);
     $fetch_stmt->bind_param("i",$user_id);
     $fetch_stmt->execute();
@@ -43,9 +43,9 @@ if($_SERVER['REQUEST_METHOD'] === 'GET'){
 
 if ($_SERVER['REQUEST_METHOD']==='POST') {
     $reqData = json_decode(file_get_contents('php://input'), true);
+    $request_id =$reqData['reqID'];
 
     if($reqData['action']==="cancel"){
-        $request_id =$reqData['reqID'];
 
         $cancel_query = "UPDATE rental_requests SET request_status = 'Cancelled' WHERE request_id = ? AND user_id = ? AND request_status IN ('Pending', 'Approved')";
         $cancel_query_stmt = $conn->prepare($cancel_query);
@@ -59,6 +59,49 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
 
         $cancel_query_stmt->close();
         exit();
+    }
+
+    if($reqData['action']==="return"){
+        $refund = "SELECT r.car_id, r.rental_date, r.rental_duration_days, r.total_cost, r.request_status, r.payment_status ,c.image, c.model, c.daily_rate FROM rental_requests r INNER JOIN cars c ON r.car_id = c.car_id WHERE r.user_id = ? AND r.request_id = ?";
+        $refund_stmt = $conn->prepare($refund);
+        $refund_stmt->bind_param("ii", $user_id, $request_id);
+        $refund_stmt->execute();
+        $refund_result = $refund_stmt->get_result()->fetch_assoc();
+
+        if($refund_result){
+            $start = new DateTime($refund_result['rental_date']);
+            $today = new DateTime();
+
+            $interval = $start->diff($today);
+            $days_used = $interval->days;
+
+            if($days_used<1) $days_used = 1;
+
+            $new_total_cost = $days_used*$refund_result['daily_rate'];
+
+            if($new_total_cost>$refund_result['total_cost'])$new_total_cost=$refund_result['total_cost'];
+
+            $return_request = "INSERT INTO rental_return_requests (`request_id`, `user_id`, `requested_at`, `total_deducted_cost`, `status`) VALUES (?,?,NOW(),?,'Pending')";
+            $return_stmt= $conn -> prepare($return_request);
+            $return_stmt -> bind_param("iid",$request_id, $user_id,$new_total_cost);
+            
+            if($return_stmt->execute()){
+
+                $update_rental_status = "UPDATE rental_requests SET request_status = 'Early Return Requested' WHERE request_id = ?";
+                $update_stmt = $conn -> prepare($update_rental_status);
+                $update_stmt->bind_param("i", $request_id);
+                $update_stmt->execute();
+
+                echo json_encode([
+                    "return" => true,
+                    "refund" => $refund_result['total_cost'] - $new_total_cost
+                    ]);
+            } else {
+                echo json_encode(["return" => false]);
+            }
+            $return_stmt->close();
+            exit();
+        }
     }
 }
 

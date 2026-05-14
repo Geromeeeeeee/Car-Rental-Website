@@ -68,12 +68,13 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
                     $ext = pathinfo($photo['name'], PATHINFO_EXTENSION);
                     $license_pic = uniqid(). "." . $ext;
                     $license_path = $photo_dir . $license_pic;
+                    $license_pic_path = "uploads/licenses/".$license_pic;
 
                     if(move_uploaded_file($photo['tmp_name'], $license_path)){
                         $create_request = "INSERT INTO rental_requests(user_id, car_id, driver_license_photo, rental_date, rental_time, rental_duration_days, total_cost, request_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
                         $stmt = $conn->prepare($create_request);
-                        $stmt->bind_param("iisssids",$user_id, $carID, $license_pic, $date, $time, $duration, $totalPrice, $requestStat);
+                        $stmt->bind_param("iisssids",$user_id, $carID, $license_pic_path, $date, $time, $duration, $totalPrice, $requestStat);
                         if($stmt->execute()){
                             echo json_encode(['request_stat' => true]);
                             $stmt->close();

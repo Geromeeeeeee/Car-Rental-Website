@@ -18,6 +18,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
     $ext = pathinfo($photo['name'], PATHINFO_EXTENSION);
     $payment_proof = uniqid(). "." . $ext;
     $proof_path = $photo_dir . $payment_proof;
+    $proof_pic_path = "uploads/payments/".$payment_proof;
     
     if(!is_dir($photo_dir)){
         mkdir($photo_dir, 0755, true);
@@ -33,7 +34,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
             WHERE user_id = ? AND request_id = ?";
 
             $payment_stmt = $conn->prepare($payment_query);
-            $payment_stmt->bind_param("sssii", $proof_path, $method, $ref, $uID, $reqID);
+            $payment_stmt->bind_param("sssii", $proof_pic_path, $method, $ref, $uID, $reqID);
 
             if($payment_stmt->execute()){
                 echo json_encode(['payment' => true]);
