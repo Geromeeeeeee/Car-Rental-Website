@@ -6,8 +6,9 @@ import { Nav } from "./nav";
 import { Login } from "./login"
 import { Signup } from "./signup";
 import { Rental_page } from "./rental_page";
-import { Rental_History } from "./rental_history";
+import { My_Rentals } from "./rental_history";
 import { Payment_Page } from "./payment_page";
+import { Rental_History } from "./my_rentals";
 
 function App() {
 
@@ -44,6 +45,7 @@ function App() {
         <Route path="/login" element={<Login setNavDisplay={setNavDisplay} setLog={setLog}/>}/>
         <Route path="/signup" element={<Signup setNavDisplay={setNavDisplay}/>}/>
         <Route path="/rental" element={<Rental_page setNavDisplay={setNavDisplay}/>}/>
+        <Route path="/my_rentals" element={<My_Rentals setNavDisplay={setNavDisplay}/>}/>
         <Route path="/rental_history" element={<Rental_History setNavDisplay={setNavDisplay}/>}/>
         <Route path="/payment_form" element={<Payment_Page setNavDisplay={setNavDisplay}/>}/>
       </Routes>

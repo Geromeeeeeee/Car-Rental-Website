@@ -23,12 +23,13 @@ export function Nav({navDisplay, logged, setLog}){
         //Nav bar kapag naka log in
             (
             <><nav className="w-full h-[12.5vh] flex justify-between items-center p-5 sticky top-0 bg-white z-100">
-            <div className="h-full w-[50%] flex items-center">
+            <div className="h-full w-fit flex items-center">
                 <img src="/src/assets/MLT_logo.png" alt="Logo" className="h-[200%] aspect-square"/>
                 <div className="flex space-x-6 ml-10">
                     <Link to={"/"} className="hover:text-gray-500 text-xl px-3 py-2 rounded-lg hover:shadow-md hover:bg-gray-100 transition-all duration-300">Home</Link>
                     <a href="#" className="hover:text-gray-500 text-xl px-3 py-2 rounded-lg hover:shadow-md hover:bg-gray-100 transition-all duration-300">Cars</a>
                     <a href="#About" className="hover:text-gray-500 text-xl px-3 py-2 rounded-lg hover:shadow-md hover:bg-gray-100 transition-all duration-300">About</a>
+                    <Link to={"/my_rentals"} className="hover:text-gray-500 text-xl px-3 py-2 rounded-lg hover:shadow-md hover:bg-gray-100 transition-all duration-300">My Rentals</Link>
                     <Link to={"/rental_history"} className="hover:text-gray-500 text-xl px-3 py-2 rounded-lg hover:shadow-md hover:bg-gray-100 transition-all duration-300">Rental History</Link>
                 </div>
             </div>
