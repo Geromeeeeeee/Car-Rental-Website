@@ -14,7 +14,9 @@ export function RentalForm(){
     const [time, setTime] = useState("")
     const [duration, setDuration] = useState(1)
     const [photo, setPhoto] = useState(null)
-    const missingField = !date || !time || !duration || !photo
+    const [tnc, setTnc] = useState(false)
+    const [showTNC, setShowTNC] = useState(false)
+    const missingField = !date || !time || !duration || !photo || !tnc
     const totalPrice = carDetails?carDetails.daily_rate*duration:0
 
     const [bookedDates, setBookedDates] = useState([])
@@ -91,6 +93,7 @@ export function RentalForm(){
     }
 
     return(
+        <>
         <div className="w-100% h-screen bg-white rounded-xl shadow-lg flex items-center justify-center p-7.5">
             <div className="w-[40%] h-full">
                 <img src={`http://localhost/vnm-system1/php/cars/uploads/cars/${carDetails?.image}`} alt="" className="w-full h-full overflow-hidden object-cover rounded-lg"/>
@@ -131,10 +134,40 @@ export function RentalForm(){
                 <label htmlFor="licensePhoto">Driver's License</label>
                 <input type="file" name="" id="" required className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 mb-2.5" onChange={(e)=>setPhoto(e.target.files[0])}/>
 
+                <div className="w-full h-fit flex gap-2.5 p-2">
+                    <input type="checkbox" name="terms" id="terms" checked={tnc} 
+                        onChange={(e) => setTnc(e.target.checked)}/>
+                    <label htmlFor="checkbox">I agree to the {""}
+                        <button type="button" className="text-blue-500" onClick={() => setShowTNC(true)}>
+                            Terms and Conditions
+                        </button>
+                    </label>
+                </div>
+
                 <button type="submit" disabled={missingField} className={`w-full text-white py-2 rounded-lg font-bold mt-auto ${missingField ? "bg-gray-500 cursor-not-allowed" : "bg-blue-500 hover:bg-blue-700 transition duration-300 mt-auto"}`}>
                     Confirm
                 </button>
             </form>
         </div>
+
+        {showTNC && (
+            <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50 p-4" onClick={() => setShowTNC(false)}>
+                <div className="w-[40vw] h-fit bg-white rounded-lg flex flex-col justify-start p-5" onClick={(e)=>e.stopPropagation()}>
+                    <h1 className="text-xl font-bold mb-2.5">Terms and Conditions</h1>
+                    <hr className="mb-2.5"/>
+                    <p className="mb-1">1. The renter must have a valid driver's license</p>
+                    <p className="mb-1">2. The vehicle must be returned with the same amount of fuel as provided at pickup.</p>
+                    <p className="mb-1">3. Any damage incurred during the rental period is the sole responsibility of the renter.</p>
+                    <p className="mb-1">4. Late returns will incur an additional daily charge as specified in our rates.</p>
+                    <p className="mb-2.5">5. The vehicle shall NOT be used for any illegal activities or unauthorized transport.</p>
+                    <hr className="mb-2.5"/>
+                    <div className="w-full h-fit flex justify-between">
+                    <button className="bg-gray-500 transition duration-300 p-2.5 text-white  rounded-lg" onClick={()=>setShowTNC(false)}>Close</button>
+                    <button className="bg-blue-500 hover:bg-blue-700 transition duration-300  p-2.5 text-white rounded-lg" onClick={()=>{setTnc(true), setShowTNC(false)}}>Close and agree</button>
+                    </div>
+                </div>
+            </div>
+        )}
+        </>
     )
 }

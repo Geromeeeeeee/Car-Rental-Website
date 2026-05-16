@@ -51,6 +51,7 @@ export function Cars({logged}) {
   const [cars, setCars] = useState([]);
   const [featured, setFeat] = useState([]);
   const [details, setDetails] = useState(null);
+  const [search, setSearch] = useState("")
   const navigate = useNavigate();
   const scrollRef = useRef(null);
   const modalScroll = useRef(null)
@@ -69,9 +70,16 @@ export function Cars({logged}) {
 
   return (
     <>
-      <section className="w-full h-screen flex items-center justify-center">
-        <div className="carousel w-full overflow-x-scroll overflow-y-hidden h-[95%] flex items-center justify-start [&::-webkit-scrollbar]:hidden snap-x snap-mandatory px-7.75" ref={scrollRef}>
-          {cars?.map((car) => (
+      <section className="w-full h-fit flex flex-col justify-start">
+        <div className="w-full h-fit px-10 mt-10 flex items-center">
+          <svg class="w-4 h-4 text-body mr-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"/></svg>
+          <input type="text" name="filter" id="filter" placeholder="Search eg. Toyota" className="w-[30%] h-[7.5vh] p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" value={search} onChange={(e) => setSearch(e.target.value)}/>
+        </div>
+        <div className="w-full h-[95vh] flex items-center justify-center p-0">
+          <div className="carousel w-full overflow-x-scroll overflow-y-hidden h-full flex items-center justify-start [&::-webkit-scrollbar]:hidden snap-x snap-mandatory px-7.75" ref={scrollRef}>
+          {cars?.filter((car) => 
+              car.model.toLowerCase().includes(search.toLowerCase())
+            ).map((car) => (
             <div
               key={car.car_id}
               className="w-[30%] h-[80%] shrink-0 m-[2.5vh] flex justify-center items-end rounded-2xl overflow-hidden shadow-[0px_0px_10px_0px_rgba(0,0,0,0.25)] hover:scale-[1.025] transition duration-250 ease-in-out hover:bg-white/75"
@@ -110,10 +118,11 @@ export function Cars({logged}) {
         >
           →
         </button>
+        </div>
       </section>
 
       {details && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50" onClick={()=>setDetails(null)}>
+        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-500" onClick={()=>setDetails(null)}>
           <div className="w-[65vw] h-[85vh] bg-white rounded-xl shadow-lg flex items-center justify-center">
             <div className="w-[45%] h-full bg-gray-300 relative">
               <div className="h-full w-full flex overflow-x-scroll snap-x snap-mandatory [&::-webkit-scrollbar]:hidden" ref={modalScroll}>

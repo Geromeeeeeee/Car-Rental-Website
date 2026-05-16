@@ -22,7 +22,7 @@ export function Nav({navDisplay, logged, setLog}){
         {navDisplay ? ( logged ? 
         //Nav bar kapag naka log in
             (
-            <><nav className="w-full h-[12.5vh] flex justify-between items-center p-5 sticky top-0 bg-white z-100">
+            <><nav className="w-full h-[12.5vh] flex justify-between items-center p-5 sticky top-0 bg-white z-25">
             <div className="h-full w-fit flex items-center">
                 <img src="/src/assets/MLT_logo.png" alt="Logo" className="h-[200%] aspect-square"/>
                 <div className="flex space-x-6 ml-10">
@@ -43,7 +43,7 @@ export function Nav({navDisplay, logged, setLog}){
             </div>
         </nav>
         {logOutDisp ? (
-            <div className="w-full h-screen flex justify-center items-center z-1 fixed inset-0">
+            <div className="w-full h-screen flex justify-center items-center z-50 fixed inset-0">
                 <div className="absolute inset-0 bg-black/10 backdrop-blur-sm"></div>
                 <div className="z-10 flex flex-col justify-evenly items-center w-[30%] h-[50%] bg-gray-100 rounded-3xl">
                     <div className="text-center">
