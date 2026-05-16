@@ -84,7 +84,7 @@ export function Rental_History_Block({type, list}){
                                     <div className="ml-auto h-100% w-fit flex items-center justify-center">
                                         <div className="ml-auto h-100% w-fit flex items-center justify-center">
                                             {requests.request_status === "Early Return Requested" ? (<button className="log-in w-[fit] h-[fit] p-2.5 transition duration-150ms ease-in-out bg-black/50 text-white font-bold rounded-lg text-l m-2.5">Early Return Requested</button>) : 
-                                            (<button className="log-in w-[fit] h-[fit] p-2.5 transition duration-150ms ease-in-out bg-blue-500 text-white font-bold rounded-lg text-l hover:scale-[1.075] hover:bg-blue-800 m-2.5" onClick={req_return}>Return</button>)}
+                                            (<button className="log-in w-[fit] h-[fit] p-2.5 transition duration-150ms ease-in-out bg-blue-500 text-white font-bold rounded-lg text-l hover:scale-[1.075] hover:bg-blue-800 m-2.5" onClick={req_return}>Return Early</button>)}
                                         </div>  
                                     </div>
                                 )

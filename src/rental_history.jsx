@@ -9,7 +9,7 @@ export function My_Rentals(){
     const pending = history_list.filter(request => request.request_status === 'Pending' || (request.request_status === 'Approved' && request.payment_status === 'Unpaid'))
     const approved = history_list.filter(request => request.request_status === 'Approved' && request.payment_status=== 'Paid')
     const paid = history_list.filter(request => request.payment_status === 'Proof Uploaded')
-    const active = active_list.filter(active=>active.request_status!='Returned')
+    const active = history_list.filter(request=>request.request_status==='Picked Up')
 
     return(
         <>
