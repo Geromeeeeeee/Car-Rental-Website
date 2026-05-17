@@ -62,45 +62,53 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
     }
 
     if($reqData['action']==="return"){
-        $refund = "SELECT r.car_id, r.rental_date, r.rental_duration_days, r.total_cost, r.request_status, r.payment_status ,c.image, c.model, c.daily_rate FROM rental_requests r INNER JOIN cars c ON r.car_id = c.car_id WHERE r.user_id = ? AND r.request_id = ?";
-        $refund_stmt = $conn->prepare($refund);
-        $refund_stmt->bind_param("ii", $user_id, $request_id);
-        $refund_stmt->execute();
-        $refund_result = $refund_stmt->get_result()->fetch_assoc();
 
-        if($refund_result){
-            $start = new DateTime($refund_result['rental_date']);
-            $today = new DateTime();
+        $return = "SELECT r.car_id, r.rental_date, r.rental_duration_days, r.total_cost, r.request_status, r.payment_status ,c.image, c.model, c.daily_rate FROM rental_requests r INNER JOIN cars c ON r.car_id = c.car_id WHERE r.user_id = ? AND r.request_id = ?";
 
-            $interval = $start->diff($today);
-            $days_used = $interval->days;
+        $return_stmt = $conn->prepare($return);
+        $return_stmt->bind_param("ii", $user_id, $request_id);
+        $return_stmt->execute();
+        $return_result = $return_stmt->get_result()->fetch_assoc();
 
-            if($days_used<1) $days_used = 1;
+        if($reqData['returnType']==="early"){
+            if($return_result){
+                $start = new DateTime($return_result['rental_date']);
+                $today = new DateTime();
 
-            $new_total_cost = $days_used*$refund_result['daily_rate'];
+                $interval = $start->diff($today);
+                $days_used = $interval->days;
 
-            if($new_total_cost>$refund_result['total_cost'])$new_total_cost=$refund_result['total_cost'];
+                if($days_used<1) $days_used = 1;
 
-            $return_request = "INSERT INTO rental_return_requests (`request_id`, `user_id`, `requested_at`, `total_deducted_cost`, `status`) VALUES (?,?,NOW(),?,'Pending')";
-            $return_stmt= $conn -> prepare($return_request);
-            $return_stmt -> bind_param("iid",$request_id, $user_id,$new_total_cost);
-            
-            if($return_stmt->execute()){
+                $new_total_cost = $days_used*$return_result['daily_rate'];
 
-                $update_rental_status = "UPDATE rental_requests SET request_status = 'Early Return Requested' WHERE request_id = ?";
-                $update_stmt = $conn -> prepare($update_rental_status);
-                $update_stmt->bind_param("i", $request_id);
-                $update_stmt->execute();
+                if($new_total_cost>$return_result['total_cost'])$new_total_cost=$return_result['total_cost'];
 
-                echo json_encode([
-                    "return" => true,
-                    "refund" => $refund_result['total_cost'] - $new_total_cost
-                    ]);
-            } else {
-                echo json_encode(["return" => false]);
-            }
-            $return_stmt->close();
-            exit();
+                $return_request = "INSERT INTO rental_return_requests (`request_id`, `user_id`, `requested_at`, `total_deducted_cost`, `status`) VALUES (?,?,NOW(),?,'Pending')";
+                $return_stmt= $conn -> prepare($return_request);
+                $return_stmt -> bind_param("iid",$request_id, $user_id,$new_total_cost);
+                
+                if($return_stmt->execute()){
+
+                    $update_rental_status = "UPDATE rental_requests SET request_status = 'Early Return Requested' WHERE request_id = ?";
+                    $update_stmt = $conn -> prepare($update_rental_status);
+                    $update_stmt->bind_param("i", $request_id);
+                    $update_stmt->execute();
+
+                    echo json_encode([
+                        "return" => true,
+                        "refund" => $return_result['total_cost'] - $new_total_cost
+                        ]);
+                } else {
+                    echo json_encode(["return" => false]);
+                }
+                $return_stmt->close();
+                exit();
+        } else if ($reqData['returnType']==="on_time"){
+
+        } else if ($reqData['returnType']==="late"){
+
+        }
         }
     }
 }

@@ -30,6 +30,17 @@ export function Rental_History_Block({type, list}){
                         const pickupDate = dateFormatter.format(new Date(requests.rental_date))
                         const returnDate = return_date(requests.rental_date, requests.rental_duration_days)
 
+                        const today = new Date();
+                        today.setHours(0, 0, 0, 0);
+
+                        const [year, month, day] = requests.rental_date.split("-").map(Number);
+
+                        const maxRentalDate = new Date(year, month - 1, day);
+                        maxRentalDate.setDate(maxRentalDate.getDate() + (parseInt(requests.rental_duration_days) - 1));
+                        maxRentalDate.setHours(0, 0, 0, 0);
+
+                        const isEarlyReturn = today < maxRentalDate;
+
                         const cancel_request = async (id) => {
                             const send_cancel_req = await axios.post("http://localhost/Car-Rental-Website/back/rental_history.php", {action: "cancel", reqID: requests.request_id}, {withCredentials: true})
                             
@@ -47,8 +58,8 @@ export function Rental_History_Block({type, list}){
                             </button> 
                         )
 
-                        const req_return = async () => {
-                            const send_return_req = await axios.post("http://localhost/Car-Rental-Website/back/rental_history.php", {action: "return", reqID: requests.request_id}, {withCredentials: true})
+                        const req_return = async (returnType) => {
+                            const send_return_req = await axios.post("http://localhost/Car-Rental-Website/back/rental_history.php", {action: "return", reqID: requests.request_id, returnType: returnType}, {withCredentials: true})
 
                             if(send_return_req.data.return){
                                  alert(`Return requested. Expected Refund: ${send_return_req.data.refund}`)
@@ -80,11 +91,24 @@ export function Rental_History_Block({type, list}){
                                     </div>
                                 )
                             } else if (type === "Active"){
+                                const buttonText = isEarlyReturn ? "Return Early" : "Return"
+                                const returnStat = requests.request_status === "Return Requested" || requests.request_status === "Early Return Requested"
+
+                                let returnType = "on_time"
+                                if(isEarlyReturn){
+                                    returnType = "early"
+                                } else if (today>maxRentalDate){
+                                    returnType = "late"
+                                }
+                            
                                 stat_button = (
                                     <div className="ml-auto h-100% w-fit flex items-center justify-center">
                                         <div className="ml-auto h-100% w-fit flex items-center justify-center">
-                                            {requests.request_status === "Early Return Requested" ? (<button className="log-in w-[fit] h-[fit] p-2.5 transition duration-150ms ease-in-out bg-black/50 text-white font-bold rounded-lg text-l m-2.5">Early Return Requested</button>) : 
-                                            (<button className="log-in w-[fit] h-[fit] p-2.5 transition duration-150ms ease-in-out bg-blue-500 text-white font-bold rounded-lg text-l hover:scale-[1.075] hover:bg-blue-800 m-2.5" onClick={req_return}>Return Early</button>)}
+                                            {returnStat ? (
+                                                <button className="log-in w-[fit] h-[fit] p-2.5 transition duration-150ms ease-in-out bg-black/50 text-white font-bold rounded-lg text-l m-2.5">Return Processing...</button>
+                                            ):(
+                                                <button className="log-in w-[fit] h-[fit] p-2.5 transition duration-150ms ease-in-out bg-blue-500 text-white font-bold rounded-lg text-l hover:scale-[1.075] hover:bg-blue-800 m-2.5" onClick={()=>req_return(returnType)}>{buttonText}</button>
+                                            )}
                                         </div>  
                                     </div>
                                 )
