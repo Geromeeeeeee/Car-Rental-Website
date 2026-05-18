@@ -12,6 +12,7 @@ const PasswordInput = ({ id, value, onChange, placeholder, show, setShow }) => (
             placeholder={placeholder}
             autoComplete={id === "password" ? "new-password" : "off"}
         />
+
         <button
             type="button"
             onClick={() => setShow(!show)}
@@ -44,10 +45,26 @@ export function Signup({ setNavDisplay }) {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [phone, setPhone] = useState("");
     const [licenseNumber, setLicenseNumber] = useState("");
+    const [licenseImage, setLicenseImage] = useState(null); 
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+    const passwordValidation = {
+        length: password.length >= 8,
+        uppercase: /[A-Z]/.test(password),
+        lowercase: /[a-z]/.test(password),
+        number: /[0-9]/.test(password),
+        special: /[!@#$%^&*(),.?":{}|<>_]/.test(password)
+    };
+
+    const isStrongPassword =
+        passwordValidation.length &&
+        passwordValidation.uppercase &&
+        passwordValidation.lowercase &&
+        passwordValidation.number &&
+        passwordValidation.special;
 
     const clearField = () => {
         setFullName("");
@@ -56,70 +73,101 @@ export function Signup({ setNavDisplay }) {
         setConfirmPassword("");
         setPhone("");
         setLicenseNumber("");
+        setLicenseImage(null);
+        const fileInput = document.getElementById("licenseImage");
+        if (fileInput) fileInput.value = "";
     };
 
     const handleSignup = async (e) => {
         e.preventDefault();
-        if (!fullName || !email || !password || !confirmPassword || !phone || !licenseNumber) {
-            setError("Please fill in all fields.");
+        setError("");
+        setSuccess("");
+
+        if (!fullName || !email || !password || !confirmPassword || !phone || !licenseNumber || !licenseImage) {
+            setError("Please fill in all fields and upload your license picture.");
             return;
-        } else if (password !== confirmPassword) {
+        }
+
+        if (!isStrongPassword) {
+            setError("Password is too weak. Use uppercase, lowercase, number, and special character.");
+            return;
+        }
+
+        if (password !== confirmPassword) {
             setError("Passwords do not match.");
             return;
-        } else {
-            try {
-                const response = await axios.post('http://localhost/Car-Rental-Website/back/login_signup.php', {
-                    action: "signup",
-                    fullName: fullName,
-                    email: email,
-                    password: password,
-                    phone: phone,
-                    licenseNumber: licenseNumber
-                });
+        }
 
-                const stat = response.data.signup;
-                const errorMessages = {
-                    "1": "Full name must include both first and last name.",
-                    "2": "Full name must contain only letters.",
-                    "3": "Full name is too short.",
-                    "4": "Invalid email format. Please use a valid email address.",
-                    "5": "Password must be 8–20 characters.",
-                    "6": "License format should be like ABC 123 or ABC 1234.",
-                    "7": "Email already exists. Try logging in or use a different email.",
-                    "8": "Account creation failed. Please try again later."
-                };
-                if (stat === "success") {
-                    setSuccess("Account created successfully! You can now log in.");
-                    clearField();
-                } else if (errorMessages[stat]) {
-                    setError(errorMessages[stat]);
-                    clearField();
-                } else {
-                    setError("Unexpected response. Please try again.");
+        try {
+            // Pack using FormData 
+            const formData = new FormData();
+            formData.append("action", "signup");
+            formData.append("fullName", fullName);
+            formData.append("email", email);
+            formData.append("password", password);
+            formData.append("phone", phone);
+            formData.append("licenseNumber", licenseNumber);
+            formData.append("licenseImage", licenseImage); 
+
+            const response = await axios.post(
+                "http://localhost/Car-Rental-Website/back/login_signup.php",
+                formData,
+                {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    },
                 }
-            } catch (error) {
-                setError("Connection error. Make sure Apache and MySQL are running.");
+            );
+            const stat = response.data.signup;
+
+            const errorMessages = {
+                "1": "Full name must include both first and last name.",
+                "2": "Full name must contain only letters.",
+                "3": "Full name is too short.",
+                "4": "Invalid email format. Please use a valid email address.",
+                "5": "Password must be 8–20 characters.",
+                "6": "License format should be like ABC 123 or ABC 1234.",
+                "7": "Email already exists. Try logging in or use a different email.",
+                "8": "Account creation failed. Please try again later.",
+                "9": "Invalid file type. Only JPG, JPEG, and PNG are allowed.",
+                "10": "File is too large. Maximum size is 5MB.",
+                "11": "Failed to save uploaded image. Check server permissions."
+            };
+
+            if (stat === "success") {
+                setSuccess("Account created successfully! You can now log in.");
+                clearField();
             }
+            else if (errorMessages[stat]) {
+                setError(errorMessages[stat]);
+            } else {
+                setError("Unexpected response. Please try again.");
+            }
+
+        } catch (error) {
+            setError("Connection error. Make sure Apache and MySQL are running.");
         }
     };
 
     return (
         <div className="min-h-screen bg-linear-to-br from-blue-50 to-gray-100 flex items-center justify-center p-5">
             <div className="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md border border-gray-200">
+
                 <div className="text-center mb-6">
-                    <h1 className="text-4xl font-bold text-black-900"> MLT Car Rental</h1>
+                    <h1 className="text-4xl font-bold text-black-900">MLT Car Rental</h1>
                     <p className="text-gray-600 mt-2">Create your account to get started</p>
                 </div>
 
+                {/* Display Alert Messages */}
                 {error && (
-                    <div className="bg-red-50 border-l-4 border-red-500 text-red-800 px-4 py-3 rounded mb-4 shadow-sm" role="alert">
+                    <div className="bg-red-50 border-l-4 border-red-500 text-red-800 px-4 py-3 rounded mb-4 shadow-sm">
                         <p className="font-medium">Error</p>
                         <p className="text-sm">{error}</p>
                     </div>
                 )}
 
                 {success && (
-                    <div className="bg-green-50 border-l-4 border-green-500 text-green-800 px-4 py-3 rounded mb-4 shadow-sm" role="alert">
+                    <div className="bg-green-50 border-l-4 border-green-500 text-green-800 px-4 py-3 rounded mb-4 shadow-sm">
                         <p className="font-medium">Success</p>
                         <p className="text-sm">{success}</p>
                     </div>
@@ -172,7 +220,6 @@ export function Signup({ setNavDisplay }) {
                             onChange={(e) => setPhone(e.target.value)}
                             className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
                             placeholder="e.g., 1234 567 8901"
-                            pattern="[0-9]{4} [0-9]{3} [0-9]{4}"
                             required
                             autoComplete="tel"
                         />
@@ -188,13 +235,40 @@ export function Signup({ setNavDisplay }) {
                             type="text"
                             id="licenseNumber"
                             value={licenseNumber}
-                            onChange={(e) => setLicenseNumber(e.target.value)}
+                            onChange={(e) => { const val = e.target.value; const hasDash = val.includes("-"); if (hasDash && val.length <= 13) { setLicenseNumber(val); } else if (!hasDash && val.length <= 11) { setLicenseNumber(val); } }}
                             className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
-                            placeholder="e.g., ABC 123 or ABC 1234"
-                            required
-                            autoComplete="off"
+                            placeholder="e.g., N01-26-123456" maxLength={13} required autoComplete="off"
                         />
-                        <p className="text-xs text-gray-500 mt-1">Example: ABC 123 or ABC 1234</p>
+                        <p className="text-xs text-gray-500 mt-1">Format: AAA-YY-NNNNNN (Agency Code - Year - Serial Number)</p>
+                        {licenseNumber && !/^[A-Z0-9]{3}-?\d{2}-?\d{6}$/.test(licenseNumber.trim().toUpperCase()) && (
+                            <p className="text-xs text-red-500 font-medium mt-1 flex items-center gap-1">
+                                ⚠️ Invalid format (e.g., N01-26-123456)
+                            </p>
+                        )}
+                    </div>
+
+                    {/* condition kineme, lalabas lang yung upload license pic kapag nag-match yung tinype sa format hehe */}
+                    <div className="mb-4"> 
+                        <label htmlFor="licenseImage" className={`block font-medium mb-1 flex items-center gap-1 ${/^[A-Z0-9]{3}-?\d{2}-?\d{6}$/.test(licenseNumber.trim().toUpperCase()) ? "text-green-700" : "text-gray-400"}`}>
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            Upload License Picture <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                            type="file"
+                            id="licenseImage"
+                            accept="image/*"
+                            onChange={(e) => setLicenseImage(e.target.files[0])}
+                            disabled={!/^[A-Z0-9]{3}-?\d{2}-?\d{6}$/.test(licenseNumber.trim().toUpperCase())}
+                            className={`w-full p-2 border-2 border-dashed rounded-lg bg-green-50/50 focus:outline-none transition text-sm file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold 
+                            ${/^[A-Z0-9]{3}-?\d{2}-?\d{6}$/.test(licenseNumber.trim().toUpperCase()) 
+                                ? "border-green-300 bg-green-50/30 file:bg-green-100 file:text-green-700 hover:file:bg-green-200 cursor-pointer" 
+                                : "border-gray-200 bg-gray-50 text-gray-400 file:bg-gray-100 file:text-gray-400 cursor-not-allowed"
+                            }`}
+                            required
+                        />
+                        <p className="text-xs text-gray-500 mt-1">Max file size: 5MB (PNG, JPG, JPEG)</p>
                     </div>
 
                     {/* Password */}
@@ -210,7 +284,18 @@ export function Signup({ setNavDisplay }) {
                             show={showPassword}
                             setShow={setShowPassword}
                         />
-                        <p className="text-xs text-gray-500 mt-1">8–20 characters</p>
+                        <div className="mt-2 text-xs space-y-1">
+                            <p className={passwordValidation.length ? "text-green-600" : "text-red-500"}>✓ At least 8 characters</p>
+                            <p className={passwordValidation.uppercase ? "text-green-600" : "text-red-500"}>✓ Uppercase letter</p>
+                            <p className={passwordValidation.lowercase ? "text-green-600" : "text-red-500"}>✓ Lowercase letter</p>
+                            <p className={passwordValidation.number ? "text-green-600" : "text-red-500"}>✓ Number</p>
+                            <p className={passwordValidation.special ? "text-green-600" : "text-red-500"}>✓ Special character</p>
+                            {password && (
+                                <p className={`font-semibold mt-2 ${isStrongPassword ? "text-green-600" : "text-orange-500"}`}>
+                                    {isStrongPassword ? "Strong Password" : "Weak Password"}
+                                </p>
+                            )}
+                        </div>
                     </div>
 
                     {/* Confirm Password */}
@@ -231,9 +316,15 @@ export function Signup({ setNavDisplay }) {
                         )}
                     </div>
 
+                    {/* Submit Action Block */}
                     <button
                         type="submit"
-                        className="w-full bg-blue-900 text-white py-3 rounded-lg font-bold hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 transition duration-200 transform hover:scale-[1.02] active:scale-[0.98]"
+                        disabled={!isStrongPassword}
+                        className={`w-full text-white py-3 rounded-lg font-bold focus:outline-none focus:ring-4 transition duration-200 transform active:scale-[0.98]
+                        ${isStrongPassword
+                            ? "bg-blue-900 hover:bg-blue-800 focus:ring-blue-300 hover:scale-[1.02]"
+                            : "bg-gray-400 cursor-not-allowed"
+                        }`}
                     >
                         Sign Up
                     </button>
@@ -241,15 +332,13 @@ export function Signup({ setNavDisplay }) {
 
                 <div className="mt-6 text-center border-t pt-6">
                     <p className="text-gray-600">
-                        Already have an account?{' '}
-                        <a
-                            href="/login"
-                            className="text-blue-700 font-semibold hover:text-blue-900 hover:underline transition duration-200"
-                        >
+                        Already have an account?{" "}
+                        <a href="/login" className="text-blue-700 font-semibold hover:text-blue-900 hover:underline transition duration-200">
                             Sign in here
                         </a>
                     </p>
                 </div>
+
             </div>
         </div>
     );

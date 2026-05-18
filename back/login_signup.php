@@ -1,14 +1,26 @@
 <?php
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
 include 'db_header.php';
 
 session_start();
 
-if($_SERVER['REQUEST_METHOD']==='POST'){
-    $user_data = json_decode(file_get_contents('php://input'));
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    
+    // FormData for Signup, JSON for Login/OTP
+    $action = "";
+    if (isset($_POST['action'])) {
+        $action = $_POST['action']; 
+    } else {
+        $user_data = json_decode(file_get_contents('php://input'));
+        if ($user_data && isset($user_data->action)) {
+            $action = $user_data->action;
+        }
+    }
 
-    //login process. hindi ko to masyadong gets, kinuha ko lang sa code ni gab. sorry >.<
-    if($user_data->action==="login"){
-
+    // LOGIN PROCESS 
+    if ($action === "login") {
         $email = $user_data->email;
         $pass = $user_data->password;
 
@@ -19,11 +31,10 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
             $stmt->bind_param("s", $email);
             $stmt->execute();
             $result = $stmt->get_result();
-            if($result->num_rows==1){
+            if ($result->num_rows == 1) {
                 $data = $result->fetch_assoc();
                 $stored_password = $data['password'];
-                //Checking if credentials match
-                 if (password_verify($pass, $stored_password)) {
+                if (password_verify($pass, $stored_password)) {
                     $_SESSION['user_id'] = $data['user_id'];
                     $_SESSION['email'] = $email;
                     echo json_encode(["stat" => "logged"]);
@@ -32,50 +43,74 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
                     echo json_encode(["stat" => "failed"]);
                     exit;
                 }
-            //Checking if may credentials talaga sa database. If wala, this happens.
             } else {
                 echo json_encode(["stat" => "notfound"]);
                 exit;
             }
-            $stmt -> close();
+            $stmt->close();
         }
-
     }
 
-    //Signup process
-    if($user_data->action==="signup"){
-        $fullName = $user_data->fullName;
-        $email = $user_data->email;
-        $pass = $user_data->password;
-        $phone = $user_data->phone;
-        $licenseNumber = $user_data->licenseNumber;
+    // SIGNUP PROCESS 
+    if ($action === "signup") {
+        $fullName = $_POST['fullName'] ?? '';
+        $email = $_POST['email'] ?? '';
+        $pass = $_POST['password'] ?? '';
+        $phone = $_POST['phone'] ?? '';
+        $licenseNumber = $_POST['licenseNumber'] ?? '';
         $defaultAdd = "Address";
 
-        //Validation ng mga user input. Di ko gets ginawa ni gab
+        // Full name check
         $nameParts = array_filter(explode(" ", $fullName));
         if (count($nameParts) < 2) {
             echo json_encode(["signup" => "1"]);
             exit;
-        } elseif (!preg_match("/^[a-zA-Z ]+$/", $fullName)) {
+        } // Letter only check
+        elseif (!preg_match("/^[a-zA-Z ]+$/", $fullName)) {
             echo json_encode(["signup" => "2"]);
             exit;
-        } elseif (strlen($fullName) < 5) {
+        } // Short name check
+        elseif (strlen($fullName) < 5) {
             echo json_encode(["signup" => "3"]);
             exit;
         }
 
+        // Email structure validation
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             echo json_encode(["signup" => "4"]);
             exit;
         }
 
+        // Password structure validation
         if (strlen($pass) < 8 || strlen($pass) > 20) {
             echo json_encode(["signup" => "5"]);
             exit;
         }
 
-        if (!preg_match("/^[A-Z]{3}\s?\d{2,4}$/", $licenseNumber)) {
+        // License Validation
+        if (!preg_match("/^[A-Za-z0-9]{3}-?\d{2}-?\d{6}$/", trim($licenseNumber))) {
             echo json_encode(["signup" => "6"]);
+            exit;
+        }
+        if (!isset($_FILES['licenseImage']) || $_FILES['licenseImage']['error'] !== UPLOAD_ERR_OK) {
+            echo json_encode(["signup" => "8"]); 
+            exit;
+        }
+
+        $file = $_FILES['licenseImage'];
+        $fileName = $file['name'];
+        $fileTmpName = $file['tmp_name'];
+        $fileSize = $file['size'];
+
+        $fileExt = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+        $allowedExts = ['jpg', 'jpeg', 'png'];
+        if (!in_array($fileExt, $allowedExts)) {
+            echo json_encode(["signup" => "9"]); 
+            exit;
+        }
+
+        if ($fileSize > 5 * 1024 * 1024) {
+            echo json_encode(["signup" => "10"]); 
             exit;
         }
 
@@ -84,30 +119,138 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
         $check->execute();
         $result = $check->get_result();
 
-        if ($result->num_rows > 0){
+        if ($result->num_rows > 0) {
             echo json_encode(["signup" => "7"]);
             $check->close();
             exit;
-        } $check->close();
+        }
+        $check->close();
         
-        $hashed_password = password_hash($pass, PASSWORD_DEFAULT);
-        $stmt_signup = $conn->prepare("INSERT INTO users(fullname,email,phone,address,license,password) VALUES (?, ?, ?, ?, ?, ?)");
+        $newFileName = "lic_" . uniqid() . "." . $fileExt;
+        $uploadDirectory = "uploads/";
 
-        if (!$stmt_signup) {
-            echo json_encode(["signup" => "8"]);
-            exit;
+        if (!is_dir($uploadDirectory)) {
+            mkdir($uploadDirectory, 0777, true);
         }
 
-        $stmt_signup->bind_param("ssssss", $fullName, $email, $phone, $defaultAdd ,$licenseNumber, $hashed_password);
-        if ($stmt_signup->execute()) {
-            echo json_encode(["signup" => "success"]);
+        $fileDestination = $uploadDirectory . $newFileName;
+
+        if (move_uploaded_file($fileTmpName, $fileDestination)) {
+            $hashed_password = password_hash($pass, PASSWORD_DEFAULT);
+            
+            $stmt_signup = $conn->prepare("INSERT INTO users(fullname, email, phone, address, license, license_picture, password) VALUES (?, ?, ?, ?, ?, ?, ?)");
+
+            if (!$stmt_signup) {
+                echo json_encode(["signup" => "8"]);
+                exit;
+            }
+
+            $stmt_signup->bind_param("sssssss", $fullName, $email, $phone, $defaultAdd, $licenseNumber, $newFileName, $hashed_password);
+            
+            if ($stmt_signup->execute()) {
+                echo json_encode(["signup" => "success"]);
+            } else {
+                echo json_encode(["signup" => "8"]);
+            }
+            $stmt_signup->close();
         } else {
-            echo json_encode(["signup" => "8"]);
+            echo json_encode(["signup" => "11"]); 
         }
-        $stmt_signup->close();
+        exit;
     }
 
-    if($user_data->action==="logout"){
+    // REQUEST OTP 
+    if ($action === "forgot_password_request") {
+        $email = $user_data->email;
+
+        $stmt = $conn->prepare("SELECT user_id FROM users WHERE TRIM(email)=?");
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result->num_rows == 1) {
+            $otp = rand(100000, 999999);
+            $expiry = date("Y-m-d H:i:s", strtotime("+5 minutes"));
+
+            $clean_stmt = $conn->prepare("DELETE FROM usersreset WHERE email = ?");
+            $clean_stmt->bind_param("s", $email);
+            $clean_stmt->execute();
+            $clean_stmt->close();
+
+            $insert_stmt = $conn->prepare("INSERT INTO usersreset (email, reset_code, reset_expiry) VALUES (?, ?, ?)");
+            $insert_stmt->bind_param("sss", $email, $otp, $expiry);
+            $insert_stmt->execute();
+            $insert_stmt->close();
+
+            echo json_encode(["status" => "otp_generated"]);
+            $stmt->close();
+            exit;
+        } else {
+            echo json_encode(["status" => "email_not_found"]);
+        }
+        $stmt->close();
+        exit;
+    }
+
+    // VERIFY OTP 
+    if ($action === "verify_otp_only") {
+        $email = $user_data->email;
+        $otp = $user_data->otp;
+        $current_time = date("Y-m-d H:i:s");
+
+        $stmt = $conn->prepare("SELECT email FROM usersreset WHERE email = ? AND reset_code = ? AND reset_expiry > ?");
+        $stmt->bind_param("sss", $email, $otp, $current_time);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result->num_rows == 1) {
+            echo json_encode(["status" => "otp_valid"]);
+        } else {
+            echo json_encode(["status" => "invalid_otp"]);
+        }
+        $stmt->close();
+        exit;
+    }
+
+    // RESET PASSWORD 
+    if ($action === "verify_otp_and_reset") {
+        $email = $user_data->email;
+        $otp = $user_data->otp;
+        $new_pass = $user_data->password;
+        $current_time = date("Y-m-d H:i:s");
+
+        $stmt = $conn->prepare("SELECT email FROM usersreset WHERE email = ? AND reset_code = ? AND reset_expiry > ?");
+        $stmt->bind_param("sss", $email, $otp, $current_time);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result->num_rows == 1) {
+            $hashed_password = password_hash($new_pass, PASSWORD_DEFAULT);
+
+            $update_stmt = $conn->prepare("UPDATE users SET password = ? WHERE email = ?");
+            $update_stmt->bind_param("ss", $hashed_password, $email);
+
+            if ($update_stmt->execute()) {
+                $delete_stmt = $conn->prepare("DELETE FROM usersreset WHERE email = ?");
+                $delete_stmt->bind_param("s", $email);
+                $delete_stmt->execute();
+                $delete_stmt->close();
+
+                echo json_encode(["status" => "success"]);
+            } else {
+                echo json_encode(["status" => "failed"]);
+            }
+            $update_stmt->close();
+        } else {
+            echo json_encode(["status" => "invalid_otp"]);
+        }
+        $stmt->close();
+        exit;
+    }
+
+    // LOGOUT 
+    if ($action === "logout") {
+        $action = ""; 
         session_unset();
         session_destroy();
         exit;
@@ -115,5 +258,4 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
 }
 
 $conn->close();
-
 ?>
