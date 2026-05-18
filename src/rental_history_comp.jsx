@@ -91,25 +91,34 @@ export function Rental_History_Block({type, list}){
                                     </div>
                                 )
                             } else if (type === "Active"){
+                                const returnStat = requests.request_status === "Early Return Requested" || requests.request_status === "Return Requested" || requests.request_status === "Late Return Requested"
+
+                                const isApproved = requests.request_status === "Early Return Approved" || requests.request_status === "Return Approved" || requests.request_status === "Late Return Approved"
+
                                 const buttonText = isEarlyReturn ? "Return Early" : "Return"
-                                const returnStat = requests.request_status === "Return Requested" || requests.request_status === "Early Return Requested"
 
                                 let returnType = "on_time"
                                 if(isEarlyReturn){
                                     returnType = "early"
-                                } else if (today>maxRentalDate){
+                                } else if (today > maxRentalDate){
                                     returnType = "late"
                                 }
-                            
+
                                 stat_button = (
                                     <div className="ml-auto h-100% w-fit flex items-center justify-center">
-                                        <div className="ml-auto h-100% w-fit flex items-center justify-center">
-                                            {returnStat ? (
-                                                <button className="log-in w-[fit] h-[fit] p-2.5 transition duration-150ms ease-in-out bg-black/50 text-white font-bold rounded-lg text-l m-2.5">Return Processing...</button>
-                                            ):(
-                                                <button className="log-in w-[fit] h-[fit] p-2.5 transition duration-150ms ease-in-out bg-blue-500 text-white font-bold rounded-lg text-l hover:scale-[1.075] hover:bg-blue-800 m-2.5" onClick={()=>req_return(returnType)}>{buttonText}</button>
-                                            )}
-                                        </div>  
+                                        {returnStat ? (
+                                        <button className="w-fit h-fit p-2.5 bg-black/50 text-white font-bold rounded-lg text-l m-2.5 cursor-not-allowed">
+                                            Return Request Processing
+                                        </button>
+                                        ) : isApproved ? (
+                                        <button className="w-fit h-fit p-2.5 bg-blue-500 text-white font-bold rounded-lg text-l m-2.5 cursor-not-allowed">
+                                            Return Request Processed. Please drop off vehicle
+                                        </button>
+                                        ) : (
+                                        <button className="w-fit h-fit p-2.5 transition duration-150ms ease-in-out bg-blue-500 text-white font-bold rounded-lg text-l hover:scale-[1.075] hover:bg-blue-800" onClick={() => req_return(returnType)}>
+                                            {buttonText}
+                                        </button>
+                                        )}
                                     </div>
                                 )
                             } else if (type === "Paid"){
