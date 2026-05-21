@@ -2,6 +2,8 @@
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
+require __DIR__ . '/vendor/autoload.php';
+
 include 'db_header.php';
 
 session_start();
@@ -163,12 +165,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($action === "forgot_password_request") {
         $email = $user_data->email;
 
-        $stmt = $conn->prepare("SELECT user_id FROM users WHERE TRIM(email)=?");
+        $stmt = $conn->prepare("SELECT user_id, fullname FROM users WHERE TRIM(email)=?");
         $stmt->bind_param("s", $email);
         $stmt->execute();
         $result = $stmt->get_result();
 
         if ($result->num_rows == 1) {
+            $user_info = $result->fetch_assoc();
+            $fullname = $user_info['fullname'];
+            
             $otp = rand(100000, 999999);
             $expiry = date("Y-m-d H:i:s", strtotime("+5 minutes"));
 
@@ -182,7 +187,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $insert_stmt->execute();
             $insert_stmt->close();
 
-            echo json_encode(["status" => "otp_generated"]);
+            // DITO IPINASOK YUNG PHPMAILER 
+            $mail = new PHPMailer(true);
+            try {
+                $mail->isSMTP();
+                $mail->Host       = 'smtp.gmail.com';
+                $mail->SMTPAuth   = true;
+                $mail->Username   = 'mltcarrental.official@gmail.com'; 
+                $mail->Password   = 'sexn skcq wtuc teye'; 
+                $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+                $mail->Port       = 587;
+
+                $mail->setFrom('mltcarrental.official@gmail.com', 'MLT Car Rental');
+                $mail->addAddress($email, $fullname);
+
+                $mail->isHTML(true);
+                $mail->Subject = 'Your MLT Car Rental OTP Code';
+                $mail->Body    = "
+                    <div style='font-family: Arial, sans-serif; padding: 20px;'>
+                        <h2>Hello " . htmlspecialchars($fullname) . ",</h2>
+                        <p>Use this OTP to reset your password:</p>
+                        <h1 style='color: #1e3a8a;'>" . $otp . "</h1>
+                    </div>";
+
+                $mail->send();
+                echo json_encode(["status" => "otp_generated"]);
+            } catch (Exception $e) {
+                echo json_encode(["status" => "email_failed", "error" => $mail->ErrorInfo]);
+            }
+
             $stmt->close();
             exit;
         } else {

@@ -14,6 +14,20 @@ export function Login({ setNavDisplay, setLog }) {
     const [resetSuccess, setResetSuccess] = useState(false)
     const [forgotData, setForgotData] = useState({ email: "", otp: "", newPass: "", confirmPass: "" })
 
+    const [isSending, setIsSending] = useState(false)
+    const [timer, setTimer] = useState(0)
+    useEffect(() => {
+        let interval = null
+        if (timer > 0) {
+            interval = setInterval(() => {
+                setTimer((prev) => prev - 1)
+            }, 1000)
+        } else {
+            clearInterval(interval)
+        }
+        return () => clearInterval(interval)
+    }, [timer])
+
     useEffect(() => {
         setNavDisplay(false)
         return () => setNavDisplay(true)
@@ -40,19 +54,58 @@ export function Login({ setNavDisplay, setLog }) {
         } catch (err) { setError("Connection error") }
     }
 
-    // STEP 1: Request OTP
+    //Request OTP (Dito isiningit ung Loading nd Timer)
     const handleForgotPassword = async (e) => {
         e.preventDefault()
         if (!forgotData.email) return
+        
         setModalError("")
+        setIsSending(true)
+
         try {
-            const response = await axios.post('http://localhost/Car-Rental-Website/back/login_signup.php', { action: "forgot_password_request", email: forgotData.email })
-            if (response.data.status === "otp_generated") setForgotStep(2)
-            else setModalError(response.data.status === "email_not_found" ? "Account Not Found" : "Something went wrong")
-        } catch (err) { setModalError("Connection error") }
+            const response = await axios.post('http://localhost/Car-Rental-Website/back/login_signup.php', { 
+                action: "forgot_password_request", 
+                email: forgotData.email 
+            })
+            
+            if (response.data.status === "otp_generated") {
+                setTimer(60)
+                setForgotStep(2)
+            } else {
+                setModalError(response.data.status === "email_not_found" ? "Account Not Found" : "Something went wrong")
+            }
+        } catch (err) { 
+            setModalError("Connection error") 
+        } finally {
+            setIsSending(false) 
+        }
+    }
+    //for resend button
+    const handleResendOtp = async () => {
+        if (!forgotData.email || isSending) return
+        
+        setModalError("")
+        setIsSending(true)
+
+        try {
+            const response = await axios.post('http://localhost/Car-Rental-Website/back/login_signup.php', { 
+                action: "forgot_password_request", 
+                email: forgotData.email 
+            })
+            
+            if (response.data.status === "otp_generated") {
+                setTimer(60)
+            } else {
+                setModalError("Failed to resend code. Please try again.")
+            }
+        } catch (err) { 
+            setModalError("Connection error during resend") 
+        } finally {
+            setIsSending(false)
+        }
     }
 
-    // STEP 2: Verify OTP muna
+    // Verify OTP muna
     const handleVerifyOtpOnly = async (e) => {
         e.preventDefault()
         if (!forgotData.otp) return
@@ -64,7 +117,7 @@ export function Login({ setNavDisplay, setLog }) {
         } catch (err) { setModalError("Connection error") }
     }
 
-    // STEP 3: Reset Password
+    //Reset Password
     const handleResetPasswordFinal = async (e) => {
         e.preventDefault()
         if (!forgotData.newPass || !forgotData.confirmPass) return
@@ -81,6 +134,7 @@ export function Login({ setNavDisplay, setLog }) {
         setShowForgotModal(false)
         setForgotData({ email: "", otp: "", newPass: "", confirmPass: "" })
         setForgotStep(1); setModalError(""); setResetSuccess(false)
+        setTimer(0) //reset yung timer kapag sinara yung modal
     }
 
     return (
@@ -127,7 +181,13 @@ export function Login({ setNavDisplay, setLog }) {
                                             <p className="text-gray-600 mb-4">Enter your email address and we'll send you a link to reset your password.</p>
                                             <input type="email" name="email" value={forgotData.email} onChange={handleInputChange} placeholder="Enter your email" className="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-blue-600" required />
                                             <div className="flex gap-3">
-                                                <button type="submit" className="flex-1 bg-blue-900 text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition duration-300">Send Code</button>
+                                                <button 
+                                                    type="submit" 
+                                                    disabled={isSending}
+                                                    className={`flex-1 text-white py-3 rounded-lg font-bold transition duration-300 ${isSending ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-900 hover:bg-blue-700'}`}
+                                                >
+                                                    {isSending ? "Sending Code..." : "Send Code"}
+                                                </button>
                                                 <button type="button" onClick={closeModal} className="flex-1 bg-gray-200 text-gray-700 py-3 rounded-lg font-bold hover:bg-gray-300 transition duration-300">Cancel</button>
                                             </div>
                                         </form>
@@ -135,7 +195,22 @@ export function Login({ setNavDisplay, setLog }) {
                                     {forgotStep === 2 && (
                                         <form onSubmit={handleVerifyOtpOnly}>
                                             <p className="text-gray-600 mb-4 text-sm">Enter the 6-digit code generated in the database to verify your account.</p>
-                                            <input type="text" name="otp" maxLength="6" value={forgotData.otp} onChange={handleInputChange} placeholder="Enter 6-digit OTP code" className="w-full p-3 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-blue-600 text-center font-bold tracking-widest text-lg" required />
+                                            <input type="text" name="otp" maxLength="6" value={forgotData.otp} onChange={handleInputChange} placeholder="Enter 6-digit OTP code" className="w-full p-3 border border-gray-300 rounded-lg mb-2 focus:outline-none focus:border-blue-600 text-center font-bold tracking-widest text-lg" required />
+                                            
+                                            <div className="text-center mb-5 text-sm">
+                                                {timer > 0 ? (
+                                                    <p className="text-gray-500">Didn't receive the code? Resend in <span className="font-bold text-blue-900">{timer}s</span></p>
+                                                ) : (
+                                                    <p className="text-gray-600">
+                                                        Didn't receive the code?{" "}
+                                                        {/* Inilipat natin sa bagong handleResendOtp function para isolated ang context */}
+                                                        <button type="button" onClick={handleResendOtp} disabled={isSending} className="text-blue-600 font-bold hover:underline focus:outline-none disabled:text-gray-400">
+                                                            {isSending ? "Sending..." : "Resend Code"}
+                                                        </button>
+                                                    </p>
+                                                )}
+                                            </div>
+
                                             <div className="flex gap-3">
                                                 <button type="submit" className="flex-1 bg-blue-900 text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition duration-300">Verify Code</button>
                                                 <button type="button" onClick={() => setForgotStep(1)} className="flex-1 bg-gray-200 text-gray-700 py-3 rounded-lg font-bold hover:bg-gray-300 transition duration-300">Back</button>
