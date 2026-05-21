@@ -22,4 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
 vendor/
+
+#email credentials
+back/config.php

@@ -1,4 +1,5 @@
 <?php
+include 'config.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
@@ -193,8 +194,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $mail->isSMTP();
                 $mail->Host       = 'smtp.gmail.com';
                 $mail->SMTPAuth   = true;
-                $mail->Username   = 'mltcarrental.official@gmail.com'; 
-                $mail->Password   = 'sexn skcq wtuc teye'; 
+                $mail->Username = SMTP_EMAIL;
+                $mail->Password = SMTP_PASSWORD;
                 $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
                 $mail->Port       = 587;
 
