@@ -5,13 +5,12 @@ use PHPMailer\PHPMailer\Exception;
 
 require __DIR__ . '/vendor/autoload.php';
 
-include 'db_header.php'; // Siguraduhing may CORS headers ito sa loob!
+include 'db_header.php';
 
 session_start();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
-    // Basahin palagi ang JSON payload kung meron para maiwasan ang "Undefined variable" fatal error
     $user_data = json_decode(file_get_contents('php://input'));
     
     $action = "";

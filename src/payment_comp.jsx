@@ -9,8 +9,14 @@ export function PaymentForm(){
     const [method, setMethod] = useState("")
     const [proof, setProof] = useState(null)
     const [ref, setRef] = useState("")
-    const {paymentDetails} = location.state || {}
+    const { paymentDetails, type } = location.state || {}
     const missingField = !method || !proof || !ref
+
+    const total = parseFloat(paymentDetails.total_cost)
+    const downpaymentAmount = total * 0.50
+    const finalPaymentAmount = total - downpaymentAmount
+
+    const displayAmount = type === 'Downpayment' ? downpaymentAmount : finalPaymentAmount
 
     const payment = async (e) => {
         e.preventDefault()
@@ -26,6 +32,7 @@ export function PaymentForm(){
             formData.append("proof", proof)
             formData.append("ref", ref)
             formData.append("reqID", paymentDetails.request_id)
+            formData.append("paymentType", type)
 
             response = await axios.post('http://localhost/Car-Rental-Website/back/payment.php', formData, {withCredentials: true})
 
@@ -59,7 +66,7 @@ export function PaymentForm(){
                 <input type="text" name="" id="" value={paymentDetails.model} readOnly required className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 mb-2.5"/>
 
                 <label htmlFor="price">Total Price: </label>
-                <input type="number" name="" id="" value={paymentDetails.total_cost} readOnly required className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 mb-2.5"/>
+                <input type="number" name="" id="" value={displayAmount} readOnly required className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 mb-2.5"/>
 
                 <label htmlFor="method">Payment Method: </label>
                 <select name="method" id="method" className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 mb-2.5" value={method} onChange={(e)=>setMethod(e.target.value)}>

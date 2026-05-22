@@ -13,6 +13,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
     $method = $_POST['method'];
     $ref = $_POST['ref'];
     $photo = $_FILES['proof'];
+    $paymentType = $_POST['paymentType'];
 
     $photo_dir = "C:/xampp/htdocs/vnm-system1/uploads/payments/";
     $ext = pathinfo($photo['name'], PATHINFO_EXTENSION);
@@ -26,12 +27,21 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
     
     if(move_uploaded_file($photo['tmp_name'], $proof_path)){
         if($action==='payment'){
-            $payment_query = "UPDATE rental_requests 
-            SET payment_proof_path = ?,
-            payment_method = ?,
-            payment_reference_no = ?,
-            payment_status = 'Proof Uploaded'
-            WHERE user_id = ? AND request_id = ?";
+            if($paymentType === 'Downpayment') {
+                $payment_query = "UPDATE rental_requests 
+                                  SET downpayment_proof_path = ?,
+                                  downpayment_method = ?,
+                                  downpayment_reference_no = ?,
+                                  payment_status = 'Downpayment Proof Uploaded'
+                                  WHERE user_id = ? AND request_id = ?";
+            } else {
+                $payment_query = "UPDATE rental_requests 
+                SET final_payment_proof_path = ?,
+                final_payment_method = ?,
+                final_payment_reference_no = ?,
+                payment_status = 'Final Proof Uploaded'
+                WHERE user_id = ? AND request_id = ?";
+            }
 
             $payment_stmt = $conn->prepare($payment_query);
             $payment_stmt->bind_param("sssii", $proof_pic_path, $method, $ref, $uID, $reqID);

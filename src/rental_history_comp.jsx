@@ -73,26 +73,42 @@ export function Rental_History_Block({type, list}){
                         if (type==="Pending") {
                             stat_button = (
                                 <div className="ml-auto h-100% w-fit flex items-center justify-center">
-                                    {(requests.request_status === 'Approved' && requests.payment_status === 'Unpaid') && (
-                                    <button className="log-in w-[fit] h-[fit] p-2.5 transition duration-150ms ease-in-out bg-blue-500 text-white font-bold rounded-lg text-l hover:scale-[1.075] hover:bg-blue-800 m-2.5" onClick={()=>nav("/payment_form", {state:{paymentDetails: requests}})}>
-                                        Payment
+                                    {(requests.request_status === 'Approved' && (requests.payment_status === 'Unpaid' || requests.payment_status === 'Downpayment Reupload Required')) && (
+                                    <button className="log-in p-2.5 bg-blue-500 text-white font-bold rounded-lg hover:bg-blue-800 m-2.5" 
+                                    onClick={() => nav("/payment_form", { state: { paymentDetails: requests, type: 'Downpayment' } })}>
+                                    {requests.payment_status === 'Unpaid' ? "Pay Downpayment" : "Reupload Downpayment"}
                                     </button>
                                     )}
-                                    {(requests.request_status === 'Approved' && requests.payment_status === 'Reupload Required') && (
-                                    <button className="log-in w-[fit] h-[fit] p-2.5 transition duration-150ms ease-in-out bg-blue-500 text-white font-bold rounded-lg text-l hover:scale-[1.075] hover:bg-blue-800 m-2.5" onClick={()=>nav("/payment_form", {state:{paymentDetails: requests}})}>
-                                        Payment Proof Reupload Needed
+                                    {(requests.request_status === 'Approved' && requests.payment_status === 'Final Reupload Required') && (
+                                    <button className="log-in p-2.5 bg-blue-500 text-white font-bold rounded-lg hover:bg-blue-800 m-2.5" 
+                                    onClick={() => nav("/payment_form", { state: { paymentDetails: requests, type: 'Final Payment' } })}>
+                                        Reupload Final Proof
                                     </button>
                                     )}
                                     {cancelButton}  
                                 </div>
                             )
-                            } else if (type==="Approved"){
+                            } else if (type==="Verification Pending"){
+                                stat_button = (
+                                <div className="ml-auto h-100% w-fit flex items-center justify-center">
+                                    <div className="bg-yellow-500/20 text-yellow-700 p-3 rounded-lg font-bold border border-yellow-500">
+                                        Verification in Progress
+                                    </div>
+                                </div>
+                            )
+                            } else if (type === "Approved") {
                                 stat_button = (
                                     <div className="ml-auto h-100% w-fit flex items-center justify-center">
-                                        <div className="ml-auto h-100% w-fit flex items-center justify-center">
-                                            <div className="log-in w-[fit] h-[fit] p-2.5 transition duration-150ms ease-in-out bg-black/50 text-white font-bold rounded-lg text-l m-2.5">Pickup on pickup date</div>
-                                            {cancelButton}
-                                        </div>  
+                                        {requests.payment_status === 'Downpayment Verified' ? (
+                                            <button className="log-in p-2.5 bg-green-500 text-white font-bold rounded-lg hover:bg-green-700 m-2.5" 
+                                                    onClick={() => nav("/payment_form", { state: { paymentDetails: requests, type: 'Final Payment' } })}>
+                                                Pay Final Balance
+                                            </button>
+                                        ) : (
+                                            <div className="bg-green-600 text-white p-3 rounded-lg font-bold">
+                                                Pickup on pickup date
+                                            </div>
+                                        )}
                                     </div>
                                 )
                             } else if (type === "Active"){
@@ -124,14 +140,6 @@ export function Rental_History_Block({type, list}){
                                             {buttonText}
                                         </button>
                                         )}
-                                    </div>
-                                )
-                            } else if (type === "Paid"){
-                                stat_button = (
-                                    <div className="ml-auto h-100% w-fit flex items-center justify-center">
-                                        <div className="ml-auto h-100% w-fit flex items-center justify-center">
-                                            <div className="log-in w-[fit] h-[fit] p-2.5 transition duration-150ms ease-in-out bg-black/50 text-white font-bold rounded-lg text-l m-2.5">Payment to be approved</div>
-                                        </div>  
                                     </div>
                                 )
                             } else {    
