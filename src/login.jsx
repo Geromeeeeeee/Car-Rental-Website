@@ -153,8 +153,7 @@ export function Login({ setNavDisplay, setLog }) {
                             <label className="block text-gray-700 mb-2">Password</label>
                             <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" placeholder="Enter your password" />
                         </div>
-                        <div className="flex items-center justify-between mb-6">
-                            <label className="flex items-center"><input type="checkbox" className="mr-2" /><span className="text-gray-700">Remember me</span></label>
+                        <div className="flex justify-end mb-6">
                             <button type="button" onClick={() => setShowForgotModal(true)} className="text-blue-600 hover:underline focus:outline-none">Forgot password?</button>
                         </div>
                         <button type="submit" className="w-full bg-blue-900 text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition duration-300">Sign In</button>
@@ -194,9 +193,8 @@ export function Login({ setNavDisplay, setLog }) {
                                     )}
                                     {forgotStep === 2 && (
                                         <form onSubmit={handleVerifyOtpOnly}>
-                                            <p className="text-gray-600 mb-4 text-sm">Enter the 6-digit code generated in the database to verify your account.</p>
+                                            <p className="text-gray-600 mb-4 text-sm text-center">Enter the 6-digit code to verify your account.</p>
                                             <input type="text" name="otp" maxLength="6" value={forgotData.otp} onChange={handleInputChange} placeholder="Enter 6-digit OTP code" className="w-full p-3 border border-gray-300 rounded-lg mb-2 focus:outline-none focus:border-blue-600 text-center font-bold tracking-widest text-lg" required />
-                                            
                                             <div className="text-center mb-5 text-sm">
                                                 {timer > 0 ? (
                                                     <p className="text-gray-500">Didn't receive the code? Resend in <span className="font-bold text-blue-900">{timer}s</span></p>
