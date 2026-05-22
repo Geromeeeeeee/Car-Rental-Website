@@ -78,6 +78,11 @@ export function Rental_History_Block({type, list}){
                                         Payment
                                     </button>
                                     )}
+                                    {(requests.request_status === 'Approved' && requests.payment_status === 'Reupload Required') && (
+                                    <button className="log-in w-[fit] h-[fit] p-2.5 transition duration-150ms ease-in-out bg-blue-500 text-white font-bold rounded-lg text-l hover:scale-[1.075] hover:bg-blue-800 m-2.5" onClick={()=>nav("/payment_form", {state:{paymentDetails: requests}})}>
+                                        Payment Proof Reupload Needed
+                                    </button>
+                                    )}
                                     {cancelButton}  
                                 </div>
                             )
