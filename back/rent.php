@@ -64,11 +64,11 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
                     $photo = $_FILES['photo'];
                     $requestStat = 'pending';
 
-                    $photo_dir = "C:/xampp/htdocs/vnm-system1/uploads/licenses/";
+                    $photo_dir = "C:/xampp/htdocs/mlt-admin/back/Uploads/License/";
                     $ext = pathinfo($photo['name'], PATHINFO_EXTENSION);
                     $license_pic = uniqid(). "." . $ext;
                     $license_path = $photo_dir . $license_pic;
-                    $license_pic_path = "uploads/licenses/".$license_pic;
+                    $license_pic_path = "Uploads/License/".$license_pic;
 
                     if(move_uploaded_file($photo['tmp_name'], $license_path)){
                         $create_request = "INSERT INTO rental_requests(user_id, car_id, driver_license_photo, rental_date, rental_time, rental_duration_days, total_cost, request_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";

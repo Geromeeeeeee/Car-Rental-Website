@@ -15,11 +15,11 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
     $photo = $_FILES['proof'];
     $paymentType = $_POST['paymentType'];
 
-    $photo_dir = "C:/xampp/htdocs/vnm-system1/uploads/payments/";
+    $photo_dir = "C:/xampp/htdocs/mlt-admin/back/Uploads/Payment/";
     $ext = pathinfo($photo['name'], PATHINFO_EXTENSION);
     $payment_proof = uniqid(). "." . $ext;
     $proof_path = $photo_dir . $payment_proof;
-    $proof_pic_path = "uploads/payments/".$payment_proof;
+    $proof_pic_path = "Uploads/Payment/".$payment_proof;
     
     if(!is_dir($photo_dir)){
         mkdir($photo_dir, 0755, true);

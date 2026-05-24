@@ -149,7 +149,7 @@ export function Rental_History_Block({type, list}){
                         return(
                             <div key={requests.request_id} className="w-full h-fit min-h-[35vh] bg-white-400 p-5 flex border-b border-b-gray-600/50 last:border-b-0">
 
-                            <img src={`http://localhost/vnm-system1/php/cars/uploads/cars/${requests.image}`} alt="" className="w-[20%] aspect-auto rounded-xl"/>
+                            <img src={`http://localhost/mlt-admin/back/Uploads/Cars/${requests.image}`} alt="" className="w-[20%] aspect-auto rounded-xl"/>
 
                             <div className="flex flex-col w-[35%] h-100% p-3 justify-around">
                                 <p className=" text-xl font-bold w-full">{requests.model}</p>

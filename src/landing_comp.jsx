@@ -84,7 +84,7 @@ export function Cars({logged}) {
               key={car.car_id}
               className="w-[30%] h-[80%] shrink-0 m-[2.5vh] flex justify-center items-end rounded-2xl overflow-hidden shadow-[0px_0px_10px_0px_rgba(0,0,0,0.25)] hover:scale-[1.025] transition duration-250 ease-in-out hover:bg-white/75"
               style={{
-                backgroundImage: `url(http://localhost/vnm-system1/php/cars/uploads/cars/${car.image})`,
+                backgroundImage: `url(http://localhost/mlt-admin/back/Uploads/Cars/${car.image})`,
                 backgroundSize: "cover",
                 backgroundPosition: "center",
               }}
@@ -127,7 +127,7 @@ export function Cars({logged}) {
             <div className="w-[45%] h-full bg-gray-300 relative">
               <div className="h-full w-full flex overflow-x-scroll snap-x snap-mandatory [&::-webkit-scrollbar]:hidden" ref={modalScroll}>
                 {details.additional_images?.split(',').map((img, index)=>(
-                  <img src={`http://localhost/vnm-system1/php/cars/uploads/cars/${img}`} className="h-full object-cover shrink-0 snap-center"/>
+                  <img src={`http://localhost/mlt-admin/back/Uploads/Cars/${img}`} className="h-full object-cover shrink-0 snap-center"/>
                 ))}
               </div>
                 <button 
