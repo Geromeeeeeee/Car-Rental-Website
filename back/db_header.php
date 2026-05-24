@@ -1,7 +1,7 @@
 <?php
-header('Content-Type: application/json');
-header("Access-Control-Allow-Origin: http://localhost:5173");
-header("Access-Control-Allow-Headers: Content-Type");
+$origin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : 'http://localhost:5173';
+header("Access-Control-Allow-Origin: " . $origin);
+header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
 header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
 header("Access-Control-Allow-Credentials: true");
 
@@ -11,10 +11,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 
-$servername = "localhost";
-$username = "root"; 
-$password = "";     
-$dbname = "vnm";   
+$servername = getenv('DB_HOST') ?: "localhost";
+$username   = getenv('DB_USER') ?: "root"; 
+$password   = getenv('DB_PASS') ?: "";     
+$dbname     = getenv('DB_NAME') ?: "vnm";   
 
 
 $conn = new mysqli($servername, $username, $password, $dbname);
