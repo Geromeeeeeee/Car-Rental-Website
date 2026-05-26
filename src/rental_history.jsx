@@ -1,5 +1,7 @@
 import { Rental_History_Block } from "./rental_history_comp";
 import { useRecords } from "./records";
+import { Rental_History_Table } from "./rental_history_comp_copy";
+import { Rental_Buttons } from "./rental_history_buttons";
 
 export function My_Rentals(){
     const {records} = useRecords()
@@ -36,10 +38,27 @@ export function My_Rentals(){
 
     return(
         <>
-        <Rental_History_Block type="Active" list={active}/>
-        <Rental_History_Block type="Verification Pending" list={forApproval}/>
-        <Rental_History_Block type="Pending" list={pending}/>
-        <Rental_History_Block type="Approved" list={approved}/>
+        {active.length > 0 && (
+            <Rental_History_Table type="Active" list={active} />
+        )}
+
+        {forApproval.length > 0 && (
+            <Rental_History_Table type="Verification Pending" list={forApproval} />
+        )}
+
+        {pending.length > 0 && (
+            <Rental_History_Table type="Pending" list={pending} />
+        )}
+
+        {approved.length > 0 && (
+            <Rental_History_Table type="Approved" list={approved} />
+        )}
+
+        {active.length === 0 && forApproval.length === 0 && pending.length === 0 && approved.length === 0 && (
+            <div className="flex w-[90vw] h-[15vh] border border-gray-600/25 rounded-2xl m-auto mt-10">
+                <h1 className="text-xl text-black/50 m-auto">No rental history found.</h1>
+            </div>
+        )}
         </>
     )
 }
