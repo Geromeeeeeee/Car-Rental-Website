@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom"; 
 import axios from "axios";
+import { API_BASE_URL } from "./config";
 
 const PasswordInput = ({ id, value, onChange, placeholder, show, setShow }) => (
     <div className="relative">
@@ -141,7 +142,7 @@ export function Signup({ setNavDisplay }) {
             formData.append("licenseImage", licenseImage); 
 
             const response = await axios.post(
-                "http://localhost/Car-Rental-Website/back/login_signup.php",
+                `${API_BASE_URL}/back/login_signup.php`,
                 formData,
                 { headers: { "Content-Type": "multipart/form-data" } }
             );
@@ -192,7 +193,7 @@ export function Signup({ setNavDisplay }) {
         setIsVerifying(true);
         try {
             const response = await axios.post(
-                "http://localhost/Car-Rental-Website/back/login_signup.php",
+                `${API_BASE_URL}/back/login_signup.php`,
                 {
                     action: "verify_signup_otp",
                     email: email,
@@ -238,7 +239,7 @@ export function Signup({ setNavDisplay }) {
             formData.append("licenseImage", licenseImage); 
 
             const response = await axios.post(
-                "http://localhost/Car-Rental-Website/back/login_signup.php",
+                `${API_BASE_URL}/back/login_signup.php`,
                 formData,
                 { headers: { "Content-Type": "multipart/form-data" } }
             );

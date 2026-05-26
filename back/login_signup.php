@@ -99,7 +99,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($fileSize > 5 * 1024 * 1024) { echo json_encode(["signup" => "10"]); exit; }
 
         $newFileName = "lic_" . uniqid() . "." . $fileExt;
-        $uploadDirectory = "C:/xampp/htdocs/mlt-admin/back/Uploads/License/";
+        $uploadDirectory = __DIR__ . "/../../mlt-admin/back/Uploads/License/";
         if (!is_dir($uploadDirectory)) { mkdir($uploadDirectory, 0777, true); }
 
         // 3. Move File & Create OTP

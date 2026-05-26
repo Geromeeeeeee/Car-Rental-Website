@@ -1,5 +1,6 @@
 import axios from "axios"
 import { useNavigate } from "react-router-dom"
+import { API_BASE_URL, API_BASE_URL_ADMIN } from "./config"
 
 const dateFormatter = new Intl.DateTimeFormat('en-US', {
     year: "numeric",
@@ -42,7 +43,7 @@ export function Rental_History_Block({type, list}){
                         const isEarlyReturn = today < maxRentalDate;
 
                         const cancel_request = async (id) => {
-                            const send_cancel_req = await axios.post("http://localhost/Car-Rental-Website/back/rental_history.php", {action: "cancel", reqID: requests.request_id}, {withCredentials: true})
+                            const send_cancel_req = await axios.post(`${API_BASE_URL}/back/rental_history.php`, {action: "cancel", reqID: requests.request_id}, {withCredentials: true})
                             
                             const request_stat = send_cancel_req.data.cancelled
                             {request_stat ? (
@@ -59,7 +60,7 @@ export function Rental_History_Block({type, list}){
                         )
 
                         const req_return = async (returnType) => {
-                            const send_return_req = await axios.post("http://localhost/Car-Rental-Website/back/rental_history.php", {action: "return", reqID: requests.request_id, returnType: returnType}, {withCredentials: true})
+                            const send_return_req = await axios.post(`${API_BASE_URL}/back/rental_history.php`, {action: "return", reqID: requests.request_id, returnType: returnType}, {withCredentials: true})
 
                             if(send_return_req.data.return){
                                  alert(`Return requested. Expected Refund: ${send_return_req.data.refund}`)
@@ -149,7 +150,7 @@ export function Rental_History_Block({type, list}){
                         return(
                             <div key={requests.request_id} className="w-full h-fit min-h-[35vh] bg-white-400 p-5 flex border-b border-b-gray-600/50 last:border-b-0">
 
-                            <img src={`http://localhost/mlt-admin/back/Uploads/Cars/${requests.image}`} alt="" className="w-[20%] aspect-auto rounded-xl"/>
+                            <img src={`${API_BASE_URL_ADMIN}/mlt-admin/back/Uploads/Cars/${requests.image}`} alt="" className="w-[20%] aspect-auto rounded-xl"/>
 
                             <div className="flex flex-col w-[35%] h-100% p-3 justify-around">
                                 <p className=" text-xl font-bold w-full">{requests.model}</p>

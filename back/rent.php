@@ -64,7 +64,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
                     $photo = $_FILES['photo'];
                     $requestStat = 'pending';
 
-                    $photo_dir = "C:/xampp/htdocs/mlt-admin/back/Uploads/License/";
+                    $photo_dir = __DIR__ . "/../../mlt-admin/back/Uploads/License/";
                     $ext = pathinfo($photo['name'], PATHINFO_EXTENSION);
                     $license_pic = uniqid(). "." . $ext;
                     $license_path = $photo_dir . $license_pic;

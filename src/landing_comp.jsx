@@ -3,6 +3,7 @@ import axios from "axios"
 import { FaFacebook, FaPhone, FaEnvelope } from "react-icons/fa"
 import { useNavigate } from "react-router-dom";
 import { useRef } from 'react';
+import { API_BASE_URL, API_BASE_URL_ADMIN } from './config';
 
 export function Home(){
     return(
@@ -37,7 +38,7 @@ export function Home(){
                 
                 {/* car */}
                 <img
-                src="/src/assets/caru.png"
+                src="/caru.png"
                 alt="Car"
                 className="absolute w-[135%] -right-5 bottom-7.5 object-contain drop-shadow-2xl hover:scale-110 transition duration-500"/>
                 </div>
@@ -47,11 +48,10 @@ export function Home(){
     )
 }
 
-export function Cars({logged}) {
+export function Cars({logged, search}) {
   const [cars, setCars] = useState([]);
   const [featured, setFeat] = useState([]);
   const [details, setDetails] = useState(null);
-  const [search, setSearch] = useState("")
   const navigate = useNavigate();
   const scrollRef = useRef(null);
   const modalScroll = useRef(null)
@@ -59,7 +59,7 @@ export function Cars({logged}) {
   useEffect(() => {
     const fetch_results = async () => {
       const results = await axios.get(
-        "http://localhost/Car-Rental-Website/back/landing.php"
+        `${API_BASE_URL}/back/landing.php`
       );
       setCars(results.data.cars);
       setFeat(results.data.featured);
@@ -71,10 +71,6 @@ export function Cars({logged}) {
   return (
     <>
       <section className="w-full h-fit flex flex-col justify-start">
-        <div className="w-full h-fit px-10 mt-10 flex items-center">
-          <svg class="w-4 h-4 text-body mr-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"/></svg>
-          <input type="text" name="filter" id="filter" placeholder="Search eg. Toyota" className="w-[30%] h-[7.5vh] p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" value={search} onChange={(e) => setSearch(e.target.value)}/>
-        </div>
         <div className="w-full h-[95vh] flex items-center justify-center p-0">
           <div className="carousel w-full overflow-x-scroll overflow-y-hidden h-full flex items-center justify-start [&::-webkit-scrollbar]:hidden snap-x snap-mandatory px-7.75" ref={scrollRef}>
           {cars?.filter((car) => 
@@ -84,7 +80,7 @@ export function Cars({logged}) {
               key={car.car_id}
               className="w-[30%] h-[80%] shrink-0 m-[2.5vh] flex justify-center items-end rounded-2xl overflow-hidden shadow-[0px_0px_10px_0px_rgba(0,0,0,0.25)] hover:scale-[1.025] transition duration-250 ease-in-out hover:bg-white/75"
               style={{
-                backgroundImage: `url(http://localhost/mlt-admin/back/Uploads/Cars/${car.image})`,
+                backgroundImage: `url(${API_BASE_URL_ADMIN}/Uploads/Cars/${car.image})`,
                 backgroundSize: "cover",
                 backgroundPosition: "center",
               }}
@@ -127,7 +123,7 @@ export function Cars({logged}) {
             <div className="w-[45%] h-full bg-gray-300 relative">
               <div className="h-full w-full flex overflow-x-scroll snap-x snap-mandatory [&::-webkit-scrollbar]:hidden" ref={modalScroll}>
                 {details.additional_images?.split(',').map((img, index)=>(
-                  <img src={`http://localhost/mlt-admin/back/Uploads/Cars/${img}`} className="h-full object-cover shrink-0 snap-center"/>
+                  <img src={`${API_BASE_URL_ADMIN}/Uploads/Cars/${img}`} className="h-full object-cover shrink-0 snap-center"/>
                 ))}
               </div>
                 <button 

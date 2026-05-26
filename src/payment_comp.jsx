@@ -2,6 +2,7 @@ import axios from "axios";
 import { useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import { API_BASE_URL } from "./config";
 
 export function PaymentForm(){
     const location = useLocation()
@@ -34,7 +35,7 @@ export function PaymentForm(){
             formData.append("reqID", paymentDetails.request_id)
             formData.append("paymentType", type)
 
-            response = await axios.post('http://localhost/Car-Rental-Website/back/payment.php', formData, {withCredentials: true})
+            response = await axios.post(`${API_BASE_URL}/back/payment.php`, formData, {withCredentials: true})
 
         }catch{
             alert("Eror")

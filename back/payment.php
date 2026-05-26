@@ -15,7 +15,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
     $photo = $_FILES['proof'];
     $paymentType = $_POST['paymentType'];
 
-    $photo_dir = "C:/xampp/htdocs/mlt-admin/back/Uploads/Payment/";
+    $photo_dir = __DIR__ . "/../../mlt-admin/back/Uploads/Payment/";
     $ext = pathinfo($photo['name'], PATHINFO_EXTENSION);
     $payment_proof = uniqid(). "." . $ext;
     $proof_path = $photo_dir . $payment_proof;

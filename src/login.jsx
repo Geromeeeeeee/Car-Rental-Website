@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import axios from "axios"
+import { API_BASE_URL } from "./config"
 
 export function Login({ setNavDisplay, setLog }) {
     const navigate = useNavigate()
@@ -42,7 +43,7 @@ export function Login({ setNavDisplay, setLog }) {
         e.preventDefault()
         if (!email || !password) return setError("Please fill all fields")
         try {
-            const response = await axios.post('http://localhost/Car-Rental-Website/back/login_signup.php', { action: "login", email, password }, { withCredentials: true })
+            const response = await axios.post(`${API_BASE_URL}/back/login_signup.php`, { action: "login", email, password }, { withCredentials: true })
             if (response.data.stat === "logged") {
                 localStorage.setItem("loggedIn", "true")
                 setLog(true)
@@ -63,7 +64,7 @@ export function Login({ setNavDisplay, setLog }) {
         setIsSending(true)
 
         try {
-            const response = await axios.post('http://localhost/Car-Rental-Website/back/login_signup.php', { 
+            const response = await axios.post(`${API_BASE_URL}/back/login_signup.php`, { 
                 action: "forgot_password_request", 
                 email: forgotData.email 
             })
@@ -88,7 +89,7 @@ export function Login({ setNavDisplay, setLog }) {
         setIsSending(true)
 
         try {
-            const response = await axios.post('http://localhost/Car-Rental-Website/back/login_signup.php', { 
+            const response = await axios.post(`${API_BASE_URL}/back/login_signup.php`, { 
                 action: "forgot_password_request", 
                 email: forgotData.email 
             })
@@ -111,7 +112,7 @@ export function Login({ setNavDisplay, setLog }) {
         if (!forgotData.otp) return
         setModalError("")
         try {
-            const response = await axios.post('http://localhost/Car-Rental-Website/back/login_signup.php', { action: "verify_otp_only", email: forgotData.email, otp: forgotData.otp })
+            const response = await axios.post(`${API_BASE_URL}/back/login_signup.php`, { action: "verify_otp_only", email: forgotData.email, otp: forgotData.otp })
             if (response.data.status === "otp_valid") setForgotStep(3)
             else setModalError(response.data.status === "invalid_otp" ? "Incorrect Code or Expired" : "Verification failed")
         } catch (err) { setModalError("Connection error") }
@@ -124,7 +125,7 @@ export function Login({ setNavDisplay, setLog }) {
         setModalError("")
         if (forgotData.newPass !== forgotData.confirmPass) return setModalError("Passwords do not match")
         try {
-            const response = await axios.post('http://localhost/Car-Rental-Website/back/login_signup.php', { action: "verify_otp_and_reset", email: forgotData.email, otp: forgotData.otp, password: forgotData.newPass })
+            const response = await axios.post(`${API_BASE_URL}/back/login_signup.php`, { action: "verify_otp_and_reset", email: forgotData.email, otp: forgotData.otp, password: forgotData.newPass })
             if (response.data.status === "success") setResetSuccess(true)
             else setModalError(response.data.status === "invalid_otp" ? "Session expired or invalid OTP" : "Failed to update password")
         } catch (err) { setModalError("Connection error") }
