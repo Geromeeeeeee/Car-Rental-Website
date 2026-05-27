@@ -97,7 +97,7 @@ export function RentalForm(){
         <>
         <div className="w-100% h-screen bg-white rounded-xl shadow-lg flex items-center justify-center p-7.5">
             <div className="w-[40%] h-full">
-                <img src={`${API_BASE_URL_ADMIN}/mlt-admin/back/Uploads/Cars/${carDetails?.image}`} alt="" className="w-full h-full overflow-hidden object-cover rounded-lg"/>
+                <img src={`${API_BASE_URL_ADMIN}/Uploads/Cars/${carDetails?.image}`} alt="" className="w-full h-full overflow-hidden object-cover rounded-lg"/>
             </div>
              <form onSubmit={handleSubmit} className="w-[60%] h-full px-7.5 flex flex-col">
                 <input type="text" name="" id="" readOnly required value={carDetails.model} className="text-center text-3xl font-bold w-full "/>

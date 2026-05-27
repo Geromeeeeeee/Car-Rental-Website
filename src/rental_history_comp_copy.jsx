@@ -31,9 +31,13 @@ export function Rental_History_Table({type, list}){
                     <th className="p-2.5">Return Date: </th>
                     <th className="p-2.5">Status</th>
                     {type === "Cancelled" ? null : 
-                    <th className="p-2.5">
-                        {type === "Completed" ? "Refund Amount" : "Action"}
-                    </th>
+                    type === "Completed"  ?
+                    <>
+                    <th className="p-2.5">Refund Amount</th>
+                    <th className="p-2.5">Late Fee</th>
+                    </>
+                    :
+                    <th className="p-2.5">Actions</th>
                     }
                 </tr>
             </thead>
@@ -41,7 +45,6 @@ export function Rental_History_Table({type, list}){
                 {list.map((requests,index)=>{
                 const pickupDate = dateFormatter.format(new Date(requests.rental_date))
                 const returnDate = return_date(requests.rental_date, requests.rental_duration_days)
-                //Buttons. Hindi ko na siya mapaikli
                 return(
                 <tr key={index}>
                     <td className="text-center">{requests.model}</td>
@@ -53,13 +56,15 @@ export function Rental_History_Table({type, list}){
                     </td>
                     <td className="text-center">{type === "Active" ? requests.request_status : type}</td>
                     {type === "Cancelled" ? null : 
-                    <td className="text-center p-1.5">
-                        {type === "Completed" ? requests.final_refund_amount : 
-                        <Rental_Buttons
+                    type === "Completed"  ?
+                    <>
+                    <td className="text-center">{requests.final_refund_amount}</td>
+                    <td className="text-center">{requests.late_fee}</td>
+                    </> :
+                    <Rental_Buttons
                             type={type}
                             requests={requests}
-                        />}
-                    </td>
+                        />
                     }
                 </tr>
                 )

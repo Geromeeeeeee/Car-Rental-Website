@@ -9,7 +9,7 @@ if(!isset($_SESSION['user_id'])){
 }
 
 if($_SERVER['REQUEST_METHOD'] === 'GET'){
-    $fetch_history = "SELECT r.car_id, r.rental_date, r.rental_duration_days, r.total_cost, r.request_status, r.request_id, r.payment_status ,c.image, c.model, rrd.return_date_actual, rrd.final_refund_amount FROM rental_requests r INNER JOIN cars c ON r.car_id = c.car_id LEFT JOIN rental_return_details rrd ON r.request_id = rrd.request_id WHERE r.user_id = ? AND request_status IN ('Pending', 'Approved', 'Cancelled', 'Returned','Early Return Requested', 'Picked Up', 'Early Return Approved', 'Return Approved', 'Return Requested', 'Late Return Requested', 'Late Return Approved')";
+    $fetch_history = "SELECT r.car_id, r.rental_date, r.rental_duration_days, r.total_cost, r.request_status, r.request_id, r.payment_status ,c.image, c.model, rrd.return_date_actual, rrd.final_refund_amount, rrd.late_fee FROM rental_requests r INNER JOIN cars c ON r.car_id = c.car_id LEFT JOIN rental_return_details rrd ON r.request_id = rrd.request_id WHERE r.user_id = ? AND request_status IN ('Pending', 'Approved', 'Cancelled', 'Returned','Early Return Requested', 'Picked Up', 'Early Return Approved', 'Return Approved', 'Return Requested', 'Late Return Requested', 'Late Return Approved')";
     $fetch_stmt = $conn->prepare($fetch_history);
     $fetch_stmt->bind_param("i",$user_id);
     $fetch_stmt->execute();
