@@ -6,6 +6,8 @@ import { API_BASE_URL } from "./config"
 export function Rental_Buttons ({type, requests}){
     const [early, setEarly] = useState(false)
     const [chosenDate, setChosenDate] = useState("");
+    const [refund, setRefund] = useState(0)
+    const [lateFee, setLateFee] = useState(0)
     const nav = useNavigate()
     const cancel_request = async () => {
         const send_cancel_req = await axios.post(`${API_BASE_URL}/back/rental_history.php`, {action: "cancel", reqID: requests.request_id}, {withCredentials: true})
@@ -19,7 +21,7 @@ export function Rental_Buttons ({type, requests}){
         }
     }
     const cancelButton = (
-    <button className="log-in w-[fit] h-[fit] p-1.5 transition duration-150ms ease-in-out bg-black text-white font-bold rounded-lg text-l hover:scale-[1.075]" onClick={()=>cancel_request()}>Cancel
+    <button className="log-in w-[fit] h-[fit] p-1.5 m-2.5 transition duration-150ms ease-in-out bg-black text-white font-semibold rounded-xl text-l hover:scale-[1.075]" onClick={()=>cancel_request()}>Cancel
     </button> 
     )
     
@@ -64,6 +66,15 @@ export function Rental_Buttons ({type, requests}){
             const today = new Date();
             today.setHours(0, 0, 0, 0);
 
+            const formatISODate = (dateObj) => {
+                const year = dateObj.getFullYear();
+                const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+                const day = String(dateObj.getDate()).padStart(2, "0");
+                return `${year}-${month}-${day}`;
+            };
+
+            const minDateString = formatISODate(today);
+
             const [year, month, day] = requests.rental_date.split("-").map(Number);
 
             const maxRentalDate = new Date(year, month - 1, day);
@@ -72,12 +83,9 @@ export function Rental_Buttons ({type, requests}){
 
             const isEarlyReturn = today < maxRentalDate;
 
-            const formatISODate = (dateObj) => dateObj.toISOString().split('T')[0]
-            const minDateString = formatISODate(today)
-
-            const absoluteMaxReturnOption = new Date(maxRentalDate)
-            absoluteMaxReturnOption.setDate(absoluteMaxReturnOption.getDate() - 1)
-            const maxDateString = formatISODate(absoluteMaxReturnOption)
+            const absoluteMaxReturnOption = new Date(maxRentalDate);
+            absoluteMaxReturnOption.setDate(absoluteMaxReturnOption.getDate() - 1);
+            const maxDateString = formatISODate(absoluteMaxReturnOption);
 
             const req_return = async (returnType, customReturnDate = null) => {
                 const payload = {
@@ -92,6 +100,9 @@ export function Rental_Buttons ({type, requests}){
                 }
 
                 const send_return_req = await axios.post(`${API_BASE_URL}/back/rental_history.php`, payload, { withCredentials: true })
+
+                setRefund(send_return_req.data.refund ?? 0)
+                setLateFee(send_return_req.data.late_fee ?? 0)
 
                 if (send_return_req.data.return) {
                     if (returnType === "late") {
@@ -131,11 +142,12 @@ export function Rental_Buttons ({type, requests}){
                     Return Request Processed. Please drop off vehicle
                 </button>
                 ) : (
-                <button className="w-fit h-fit p-1.5 transition duration-150ms ease-in-out bg-blue-500 text-white font-bold rounded-lg text-l hover:scale-[1.075] hover:bg-blue-800" onClick={() => isEarlyReturn ? setEarly(true) : req_return(returnType)}>
+                <button className="w-fit h-fit p-1.5 m-2.5 transition duration-150ms ease-in-out bg-blue-500 text-white font-bold rounded-lg text-l hover:scale-[1.075] hover:bg-blue-800" onClick={() => isEarlyReturn ? setEarly(true) : req_return(returnType)}>
                     {buttonText}
                 </button>
                 )}
                 {early && (
+                    
                 <div className="fixed top-0 left-0 w-screen h-screen bg-black/50 flex items-center justify-center z-50">
                 <div className="bg-white p-6 rounded-lg flex flex-col items-center justify-center shadow-lg text-black max-w-sm w-full">
                     <h1 className="text-xl font-bold mb-2">Schedule Early Return</h1>
