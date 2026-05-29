@@ -9,7 +9,20 @@ if(!isset($_SESSION['user_id'])){
 }
 
 if($_SERVER['REQUEST_METHOD'] === 'GET'){
-    $fetch_history = "SELECT r.car_id, r.rental_date, r.rental_duration_days, r.total_cost, r.request_status, r.request_id, r.payment_status ,c.image, c.model, rrd.return_date_actual, rrd.final_refund_amount, rrd.late_fee FROM rental_requests r INNER JOIN cars c ON r.car_id = c.car_id LEFT JOIN rental_return_details rrd ON r.request_id = rrd.request_id WHERE r.user_id = ? AND request_status IN ('Pending', 'Approved', 'Cancelled', 'Returned','Early Return Requested', 'Picked Up', 'Early Return Approved', 'Return Approved', 'Return Requested', 'Late Return Requested', 'Late Return Approved')";
+    $fetch_history = "SELECT 
+    r.*, 
+    c.image, 
+    c.model, 
+    rrd.return_date_actual, 
+    rrd.final_refund_amount, 
+    rrd.late_fee,
+    (CURRENT_DATE > DATE_ADD(r.rental_date, INTERVAL (r.rental_duration_days - 1) DAY)) AS is_late,
+    (CURRENT_DATE < DATE_ADD(r.rental_date, INTERVAL (r.rental_duration_days - 1) DAY)) AS is_early
+    FROM rental_requests r 
+    INNER JOIN cars c ON r.car_id = c.car_id 
+    LEFT JOIN rental_return_details rrd ON r.request_id = rrd.request_id 
+    WHERE r.user_id = ? 
+    AND r.request_status IN ('Pending', 'Approved', 'Cancelled', 'Returned', 'Early Return Requested', 'Picked Up', 'Early Return Approved', 'Return Approved', 'Return Requested', 'Late Return Requested', 'Late Return Approved')";
     $fetch_stmt = $conn->prepare($fetch_history);
     $fetch_stmt->bind_param("i",$user_id);
     $fetch_stmt->execute();
@@ -77,23 +90,26 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
         }
 
         $start = new DateTime($return_result['rental_date']);
-        $today = new DateTime();
+        $date_to_process = isset($reqData['earlyReturnDate']) ? $reqData['earlyReturnDate'] : $reqData['date'];
+        $today = new DateTime($date_to_process);
         $duration = (int)$return_result['rental_duration_days'];
 
         if($reqData['returnType']==="early"){
 
             $interval = $start->diff($today);
-            $days_used = $interval->days;
-
+            $days_used = $interval->days+1;
             if($days_used<1) $days_used = 1;
 
-            $new_total_cost = $days_used*$return_result['daily_rate'];
+            $early_cost = $days_used * $return_result['daily_rate'];
+            $non_refundable = $return_result['total_cost']*0.5;
+            //ensures refund amount does not exceed 50% of total paid, kasi non refundable na yung other 50% sa first downpayment
+            $new_total_cost = max($early_cost, $non_refundable);
+            $new_total_cost = min($new_total_cost, $return_result['total_cost']);
+            $refund = $return_result['total_cost'] - $new_total_cost;
 
-            if($new_total_cost>$return_result['total_cost'])$new_total_cost=$return_result['total_cost'];
-
-            $return_request = "INSERT INTO rental_return_requests (`request_id`, `user_id`, `requested_at`, `total_deducted_cost`, `status`) VALUES (?,?,NOW(),?,'Pending')";
+            $return_request = "INSERT INTO rental_return_requests (`request_id`, `user_id`, `requested_at`, `total_deducted_cost`, `status`, `calc_refund`) VALUES (?,?,NOW(),?,'Pending',?)";
             $early_stmt= $conn -> prepare($return_request);
-            $early_stmt -> bind_param("iid",$request_id, $user_id,$new_total_cost);
+            $early_stmt -> bind_param("iidd",$request_id, $user_id, $new_total_cost, $refund);
                 
             if($early_stmt->execute()){
                 $update_rental_status = "UPDATE rental_requests SET request_status = 'Early Return Requested' WHERE request_id = ?";
@@ -149,9 +165,9 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
                 $new_total_cost+=$late_fee;
             }
 
-            $return_request = "INSERT INTO rental_return_requests (`request_id`, `user_id`, `requested_at`, `total_deducted_cost`, `status`) VALUES (?,?,NOW(),?,'Pending')";
+            $return_request = "INSERT INTO rental_return_requests (`request_id`, `user_id`, `requested_at`, `total_deducted_cost`, `status`, `calc_late_fee`) VALUES (?,?,NOW(),?,'Pending',?)";
             $late_stmt = $conn->prepare($return_request);
-            $late_stmt->bind_param("iid", $request_id, $user_id, $new_total_cost);
+            $late_stmt->bind_param("iidd", $request_id, $user_id, $new_total_cost, $late_fee);
 
             if($late_stmt->execute()){
                 $update_rental_status = "UPDATE rental_requests SET request_status = 'Late Return Requested' WHERE request_id = ?";
@@ -162,7 +178,8 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
 
                 echo json_encode([
                     "return" => true,
-                    "late_fee" => $late_fee
+                    "late_fee" => $late_fee,
+                    "late_cost" => $new_total_cost
                 ]);
             } else {
                 echo json_encode(["return" => false]);

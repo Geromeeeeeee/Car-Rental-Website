@@ -21,7 +21,7 @@ export function Rental_Buttons ({type, requests}){
         }
     }
     const cancelButton = (
-    <button className="log-in w-[fit] h-[fit] p-1.5 m-2.5 transition duration-150ms ease-in-out bg-black text-white font-semibold rounded-xl text-l hover:scale-[1.075]" onClick={()=>cancel_request()}>Cancel
+    <button className="log-in w-[fit] h-[fit] p-1.5 mx-2.5 my-1.5 transition duration-150ms ease-in-out bg-black text-white font-semibold rounded-xl text-l hover:scale-[1.075]" onClick={()=>cancel_request()}>Cancel
     </button> 
     )
     
@@ -30,7 +30,7 @@ export function Rental_Buttons ({type, requests}){
             return(
                 <div className="ml-auto h-100% w-fit flex flex-col items-center justify-center">
                 {(requests.request_status === 'Approved' && (requests.payment_status === 'Unpaid' || requests.payment_status === 'Downpayment Reupload Required')) && (
-                    <button className="log-in p-1.5 bg-blue-500 text-white font-bold rounded-lg hover:bg-blue-800 m-2.5" onClick={() => nav("/payment_form", { state: { paymentDetails: requests, type: 'Downpayment' } })}>
+                    <button className="log-in p-1.5 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-800 mx-2.5 my-1.5" onClick={() => nav("/payment_form", { state: { paymentDetails: requests, type: 'Downpayment' } })}>
                     {requests.payment_status === 'Unpaid' ? "Pay Downpayment" : "Reupload Downpayment"}
                     </button>)}
                     {(requests.request_status === 'Approved' && requests.payment_status === 'Final Reupload Required') && (
@@ -52,97 +52,67 @@ export function Rental_Buttons ({type, requests}){
             return(
                 <div className="ml-auto h-100% w-fit flex items-center justify-center">
                 {requests.payment_status === 'Downpayment Verified' ? (
-                    <button className="log-in p-1.5 bg-green-500 text-white font-bold rounded-lg hover:bg-green-700 m-2.5" onClick={() => nav("/payment_form", { state: { paymentDetails: requests, type: 'Final Payment' } })}>
+                    <button className="log-in p-1.5 bg-green-500 text-white rounded-lg hover:bg-green-700 m-2.5" onClick={() => nav("/payment_form", { state: { paymentDetails: requests, type: 'Final Payment' } })}>
                         Pay Final Balance
                     </button>
                 ) : (
-                    <div className="bg-green-600 text-white p-1.5 rounded-lg font-bold">
+                    <div className="bg-green-600 text-white p-1.5 m-2.5 rounded-lg">
                         Pickup on pickup date
                         </div>
                     )}
                 </div>
             )
         case "Active":{
+            const isLate = parseInt(requests.is_late) === 1;
+            const isEarly = parseInt(requests.is_early) === 1;
+            const start = new Date(requests.rental_date); 
+
+            const maxRentalDate = new Date(start);
+            maxRentalDate.setDate(start.getDate() + (parseInt(requests.rental_duration_days) - 2));
+
+            const maxDate = maxRentalDate.toISOString().split('T')[0];
             const today = new Date();
-            today.setHours(0, 0, 0, 0);
 
-            const formatISODate = (dateObj) => {
-                const year = dateObj.getFullYear();
-                const month = String(dateObj.getMonth() + 1).padStart(2, "0");
-                const day = String(dateObj.getDate()).padStart(2, "0");
-                return `${year}-${month}-${day}`;
-            };
-
-            const minDateString = formatISODate(today);
-
-            const [year, month, day] = requests.rental_date.split("-").map(Number);
-
-            const maxRentalDate = new Date(year, month - 1, day);
-            maxRentalDate.setDate(maxRentalDate.getDate() + (parseInt(requests.rental_duration_days) - 1));
-            maxRentalDate.setHours(0, 0, 0, 0);
-
-            const isEarlyReturn = today < maxRentalDate;
-
-            const absoluteMaxReturnOption = new Date(maxRentalDate);
-            absoluteMaxReturnOption.setDate(absoluteMaxReturnOption.getDate() - 1);
-            const maxDateString = formatISODate(absoluteMaxReturnOption);
-
+            const minDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
             const req_return = async (returnType, customReturnDate = null) => {
                 const payload = {
                     action: "return", 
                     reqID: requests.request_id, 
                     returnType: returnType,
-                    date: formatISODate(new Date())
-                }
-
-                if (returnType === "early" && customReturnDate) {
-                    payload.earlyReturnDate = customReturnDate;
+                    date: customReturnDate || new Date().toISOString().split('T')[0]
                 }
 
                 const send_return_req = await axios.post(`${API_BASE_URL}/back/rental_history.php`, payload, { withCredentials: true })
 
-                setRefund(send_return_req.data.refund ?? 0)
-                setLateFee(send_return_req.data.late_fee ?? 0)
-
                 if (send_return_req.data.return) {
-                    if (returnType === "late") {
-                        const lateFee = send_return_req.data.late_fee ?? 0
-                        alert(`Late return requested. Additional charge: ${lateFee}`)
-                    } else {
-                        const refund = send_return_req.data.refund ?? 0
-                        alert(`Return requested. Expected Refund: ${refund}`)
-                    }
-                    window.location.reload()
+                    setRefund(send_return_req.data.refund || 0);
+                    setLateFee(send_return_req.data.late_fee || 0);
+
+                    alert(returnType === "late" ? `Late return requested. Late Fee: ₱${send_return_req.data.late_fee}` : `Return requested. Refund: ₱${send_return_req.data.refund}`);
+                    
+                    window.location.reload();
                 } else {
-                    alert("Error submitting return request.")
+                    alert("Error submitting return request.");
                 }
             }
 
-            const returnStat = requests.request_status === "Early Return Requested" || requests.request_status === "Return Requested" || requests.request_status === "Late Return Requested"
-
-            const isApproved = requests.request_status === "Early Return Approved" || requests.request_status === "Return Approved" || requests.request_status === "Late Return Approved"
-
-            const buttonText = isEarlyReturn ? "Return Early" : "Return"
-
-            let returnType = "on_time"
-            if(isEarlyReturn){
-                returnType = "early"
-            } else if (today > maxRentalDate){
-                returnType = "late"
-            }
+            const returnStat = ["Early Return Requested", "Return Requested", "Late Return Requested"].includes(requests.request_status);
+            const isApproved = ["Early Return Approved", "Return Approved", "Late Return Approved"].includes(requests.request_status);
+            const buttonText = isEarly ? "Return Early" : (isLate ? "Return Late" : "Return");
+            const returnType = isEarly ? "early" : (isLate ? "late" : "on_time");
 
             return(
                 <div className="ml-auto h-100% w-fit flex items-center justify-center">
                 {returnStat ? (
-                <button className="w-fit h-fit p-1.5 bg-black/50 text-white font-bold rounded-lg text-l m-2.5 cursor-not-allowed">
+                <button className="w-fit h-fit p-1.5 bg-black/50 text-white rounded-lg text-l m-2.5 cursor-not-allowed">
                     Return Request Processing
                 </button>
                 ) : isApproved ? (
-                <button className="w-fit h-fit p-1.5 bg-blue-500 text-white font-bold rounded-lg text-l m-2.5 cursor-not-allowed">
+                <button className="w-fit h-fit p-1.5 bg-blue-500 text-white  rounded-lg text-l m-2.5 cursor-not-allowed">
                     Return Request Processed. Please drop off vehicle
                 </button>
                 ) : (
-                <button className="w-fit h-fit p-1.5 m-2.5 transition duration-150ms ease-in-out bg-blue-500 text-white font-bold rounded-lg text-l hover:scale-[1.075] hover:bg-blue-800" onClick={() => isEarlyReturn ? setEarly(true) : req_return(returnType)}>
+                <button className="w-fit h-fit p-1.5 m-2.5 transition duration-150ms ease-in-out bg-blue-500 text-white rounded-lg text-l hover:scale-[1.075] hover:bg-blue-800" onClick={() => isEarly ? setEarly(true) : req_return(returnType)}>
                     {buttonText}
                 </button>
                 )}
@@ -154,8 +124,8 @@ export function Rental_Buttons ({type, requests}){
                     <p className="text-sm text-gray-500 mb-4">Please pick your expected vehicle drop-off date:</p>
                         <input 
                             type="date" 
-                            min={minDateString}
-                            max={maxDateString}
+                            min={minDate}
+                            max={maxDate}
                             value={chosenDate}
                             onChange={(e) => setChosenDate(e.target.value)}
                             className="border border-gray-300 rounded-lg p-2 mb-5 w-full focus:outline-none focus:border-blue-500"

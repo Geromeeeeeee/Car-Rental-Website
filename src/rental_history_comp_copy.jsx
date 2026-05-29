@@ -21,7 +21,7 @@ export function Rental_History_Table({type, list}){
         <>
         <div className="flex flex-col h-fit w-full p-2.5 box-border justify-center items-center overflow-hidden">
         <h1 className="text-2xl font-bold mb-2.5">{type}</h1>
-        <table className="w-[90vw] h-fit rounded-2xl border border-gray-600/25 shadow-[0px_0px_10px_0px_rgba(0,0,0,0.125)] overflow-hidden">
+        <table className="w-[90vw] h-fit rounded-lg border border-gray-600/25 shadow-[0px_0px_10px_0px_rgba(0,0,0,0.125)] overflow-hidden">
             <thead>
                 <tr className="rounded-tl-2xl">
                     <th className="p-2.5">Vehicle</th>
