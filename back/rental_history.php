@@ -147,6 +147,8 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
             }
             $on_time_stmt->close();
         } else if ($reqData['returnType']==="late"){
+            // Use server-local date for late fee to avoid client timezone drift.
+            $today = new DateTime('today');
             $scheduled_end = clone $start;
             $scheduled_end->modify("+".($duration-1)."Days");
             $today->setTime(0, 0, 0);
@@ -159,6 +161,9 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
                 $interval = $scheduled_end -> diff($today);
                 $days_late = $interval->days;
 
+                if ($interval->h > 0 || $interval->i > 0) {
+                    $days_late += 1;
+                }
                 if($days_late<1) $days_late=1;
 
                 $late_fee = $days_late * $return_result['daily_rate'];

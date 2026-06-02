@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { API_BASE_URL } from "./config";
+import { PopUp } from "./pop-up";
 
 export function PaymentForm(){
     const location = useLocation()
@@ -12,6 +13,9 @@ export function PaymentForm(){
     const [ref, setRef] = useState("")
     const { paymentDetails, type } = location.state || {}
     const missingField = !method || !proof || !ref
+    const [showPopUp, setShowPopUp] = useState(false)
+    const [popUpMessage, setPopUpMessage] = useState("")
+    const [messageType, setMessageType] = useState("")
 
     const total = parseFloat(paymentDetails.total_cost)
     const downpaymentAmount = total * 0.50
@@ -42,8 +46,9 @@ export function PaymentForm(){
         }
         const status = response.data.payment
         if(status){
-            alert("Payment Processed")
-            navigate("/")
+            setShowPopUp(true)
+            setMessageType("Success")
+            setPopUpMessage("Payment will be processed shortly. Check My Rentals for more info.")
         } else {
             alert ("Processing Error")
         }
@@ -51,10 +56,11 @@ export function PaymentForm(){
 
     return(
         <>
+        <PopUp show={showPopUp} message={popUpMessage} type={messageType}/>
         <div className="w-100% h-screen bg-white rounded-xl shadow-lg flex items-center justify-center p-7.5">
             <div className="w-[40%] h-full">
                 {method ? (
-                    <img src={method === 'gcash'? "src/assets/gcash_qr.jpg" : "src/assets/maya qr.png"} alt="" className="w-full h-full overflow-hidden object-contain rounded-lg"/>
+                    <img src={method === 'gcash'? "/gcash_qr.jpg" : "/maya_qr.jpg"} alt="" className="w-full h-full overflow-hidden object-contain rounded-lg"/>
                 ) : (
                     <div className="w-full h-full grid rounded-2xl border border-gray-600/25 shadow-[0px_0px_10px_0px_rgba(0,0,0,0.125)]">
                         <h1 className="text-xl text-black/50 m-auto">Select Payment Method</h1>

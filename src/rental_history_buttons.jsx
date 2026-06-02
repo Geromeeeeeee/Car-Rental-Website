@@ -2,29 +2,39 @@ import { useNavigate } from "react-router-dom"
 import {useState} from "react"
 import axios from "axios"
 import { API_BASE_URL } from "./config"
+import { PopUp } from "./pop-up"
 
 export function Rental_Buttons ({type, requests}){
     const [early, setEarly] = useState(false)
     const [chosenDate, setChosenDate] = useState("");
     const [refund, setRefund] = useState(0)
     const [lateFee, setLateFee] = useState(0)
+    const [cancelPopUp, setCancelPopUp] = useState(false)
+    const [showPopUp, setShowPopUp] = useState(false)
+    const [popUpMessage, setPopUpMessage] = useState("")
+    const [messageType, setMessageType] = useState("") 
     const nav = useNavigate()
     const cancel_request = async () => {
         const send_cancel_req = await axios.post(`${API_BASE_URL}/back/rental_history.php`, {action: "cancel", reqID: requests.request_id}, {withCredentials: true})
                             
         const request_stat = send_cancel_req.data.cancelled
         if(send_cancel_req.data.cancelled) {
-            alert("Request Cancelled");
-            window.location.reload();
+            setShowPopUp(true)
+            setMessageType("Success")
+            setPopUpMessage("Rental request Cancelled. Check Rental History for more info.")
         } else {
             alert("Request Error");
         }
     }
     const cancelButton = (
-    <button className="log-in w-[fit] h-[fit] p-1.5 mx-2.5 my-1.5 transition duration-150ms ease-in-out bg-black text-white font-semibold rounded-xl text-l hover:scale-[1.075]" onClick={()=>cancel_request()}>Cancel
+    <button className="log-in w-[fit] h-[fit] p-2.5 px-5 mx-2.5 my-1.5 transition duration-150ms ease-in-out bg-red-500 text-white font-semibold rounded-lg text-l hover:scale-[1.075]" onClick={()=>cancel_request()}>Cancel
     </button> 
     )
-    
+    const cancelModal = (
+    <button className="log-in w-[fit] h-[fit] p-1.5 mx-2.5 my-1.5 transition duration-150ms ease-in-out bg-black text-white font-semibold rounded-xl text-l hover:scale-[1.075]" 
+    onClick={()=>setCancelPopUp(true)}>Cancel
+    </button> 
+    )
     switch (type){
         case "Pending":
             return(
@@ -37,13 +47,31 @@ export function Rental_Buttons ({type, requests}){
                     <button className="log-in p-2.5 bg-blue-500 text-white font-bold rounded-lg hover:bg-blue-800 m-2.5" onClick={() => nav("/payment_form", { state: { paymentDetails: requests, type: 'Final Payment' } })}>
                     Reupload Final Proof
                     </button>)}
-                    {cancelButton}  
+                    {cancelModal}
+
+                    <div className={`fixed top-0 left-0 w-full h-full bg-black/50 flex items-center justify-center transition-opacity z-50 ${cancelPopUp ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`} onClick={()=>setCancelPopUp(false)}>
+                    <div className="bg-white rounded-lg shadow-lg w-[35vw] h-[35vh] overflow-clip flex flex-col">
+                    <div className="bg-red-500 p-2.5">
+                    <h1 className="font-semibold text-white text-xl">Warning!</h1>
+                    </div>
+                    <div className="flex grow text-black/80 p-2.5 justify-center items-center text-center">
+                        <p className="m-2.5">
+                        Are you sure you want to cancel? Any downpayments made will not be refunded.
+                        </p>
+                    </div>
+                    <div className="w-full h-fit p-2.5 flex justify-around">
+                        <button className=" w-[fit] h-[fit] p-2.5 px-5 mx-2.5 my-1.5 transition duration-150ms ease-in-out bg-green-500 text-white font-semibold rounded-lg text-l hover:scale-[1.075]" onClick={()=>setCancelPopUp(false)}>No</button>
+                        {cancelButton}
+                    </div>
+                    </div>
+                    </div>  
+                    <PopUp show={showPopUp} message={popUpMessage} type={messageType}/>
                 </div>
             )
         case "Verification Pending":
             return(
                 <div className="ml-auto h-100% w-fit flex items-center justify-center">
-                    <div className="bg-yellow-400 text-yellow-700 p-1.5 rounded-lg font-bold border border-yellow-500">
+                    <div className="bg-yellow-400 text-yellow-700 p-1.5 rounded-lg font-semibold border border-yellow-500 mx-2.5 my-1.5">
                         Verification in Progress
                     </div>
                 </div>
@@ -85,14 +113,17 @@ export function Rental_Buttons ({type, requests}){
                 const send_return_req = await axios.post(`${API_BASE_URL}/back/rental_history.php`, payload, { withCredentials: true })
 
                 if (send_return_req.data.return) {
+                    const message = (returnType === "late" ? 
+                        `Late return requested. Late Fee: ₱${send_return_req.data.late_fee}` : `Return requested. Refund: ₱${send_return_req.data.refund}`);
                     setRefund(send_return_req.data.refund || 0);
                     setLateFee(send_return_req.data.late_fee || 0);
-
-                    alert(returnType === "late" ? `Late return requested. Late Fee: ₱${send_return_req.data.late_fee}` : `Return requested. Refund: ₱${send_return_req.data.refund}`);
-                    
-                    window.location.reload();
+                    setShowPopUp(true)
+                    setMessageType("Success")
+                    setPopUpMessage(message)                  
                 } else {
-                    alert("Error submitting return request.");
+                    setShowPopUp(true)
+                    setMessageType("Error")
+                    setPopUpMessage("Error submitting return request.")
                 }
             }
 
@@ -102,6 +133,8 @@ export function Rental_Buttons ({type, requests}){
             const returnType = isEarly ? "early" : (isLate ? "late" : "on_time");
 
             return(
+                <>
+                <PopUp show={showPopUp} message={popUpMessage} type={messageType}/>
                 <div className="ml-auto h-100% w-fit flex items-center justify-center">
                 {returnStat ? (
                 <button className="w-fit h-fit p-1.5 bg-black/50 text-white rounded-lg text-l m-2.5 cursor-not-allowed">
@@ -151,6 +184,7 @@ export function Rental_Buttons ({type, requests}){
                         </div>
                     )}
                 </div>
+                </>
             )
         }
 

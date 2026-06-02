@@ -5,6 +5,7 @@ import axios from "axios"
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { API_BASE_URL, API_BASE_URL_ADMIN } from "./config";
+import { PopUp } from "./pop-up";
 
 export function RentalForm(){
     const nav = useNavigate()
@@ -19,6 +20,9 @@ export function RentalForm(){
     const [showTNC, setShowTNC] = useState(false)
     const missingField = !date || !time || !duration || !photo || !tnc
     const totalPrice = carDetails?carDetails.daily_rate*duration:0
+    const [showPopUp, setShowPopUp] = useState(false)
+    const [popUpMessage, setPopUpMessage] = useState("")
+    const [messageType, setMessageType] = useState("")
 
     const [bookedDates, setBookedDates] = useState([])
     useEffect(()=>{
@@ -76,15 +80,22 @@ export function RentalForm(){
             const req_stat = rentalDetail.data.request_stat
             const error = rentalDetail.data.error
             if(req_stat === true){
-                alert("Request now pending")
-                nav("/")
+                setShowPopUp(true)
+                setMessageType("Success")
+                setPopUpMessage("Rental request submitted successfully. Check My Rentals for more info.")
             } else{
                 if(error === 'overlap'){
-                    alert("Rental date overlaps with future booked dates")
+                    setShowPopUp(true)
+                    setMessageType("Error")
+                    setPopUpMessage("Selected date overlaps with an existing booking")
                 } else if (error === 'duration'){
-                    alert("Duration must be greater than 0")
+                    setShowPopUp(true)
+                    setMessageType("Error")
+                    setPopUpMessage("Duration must be greater than 0")
                 } else {
-                    alert("Error")
+                    setShowPopUp(true)
+                    setMessageType("Error")
+                    setPopUpMessage("An error occurred while submitting the rental request")
                 }
             }
             
@@ -95,6 +106,7 @@ export function RentalForm(){
 
     return(
         <>
+        <PopUp show={showPopUp} message={popUpMessage} type={messageType}/>
         <div className="w-100% h-screen bg-white rounded-xl shadow-lg flex items-center justify-center p-7.5">
             <div className="w-[40%] h-full">
                 <img src={`${API_BASE_URL_ADMIN}/Uploads/Cars/${carDetails?.image}`} alt="" className="w-full h-full overflow-hidden object-cover rounded-lg"/>

@@ -2,6 +2,7 @@ import axios from "axios"
 import { useNavigate } from "react-router-dom"
 import { API_BASE_URL, API_BASE_URL_ADMIN } from "./config"
 import { Rental_Buttons } from "./rental_history_buttons"
+import { PopUp } from "./pop-up"
 
 const dateFormatter = new Intl.DateTimeFormat('en-US', {
     year: "numeric",
