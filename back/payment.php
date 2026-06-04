@@ -14,6 +14,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
     $ref = $_POST['ref'];
     $photo = $_FILES['proof'];
     $paymentType = $_POST['paymentType'];
+    $payment_query = "";
 
     $photo_dir = __DIR__ . "/../../mlt-admin/back/Uploads/Payment/";
     $ext = pathinfo($photo['name'], PATHINFO_EXTENSION);
@@ -34,13 +35,21 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
                                   downpayment_reference_no = ?,
                                   payment_status = 'Downpayment Proof Uploaded'
                                   WHERE user_id = ? AND request_id = ?";
-            } else {
+            } else if ($paymentType === 'Final Payment'){
                 $payment_query = "UPDATE rental_requests 
                 SET final_payment_proof_path = ?,
                 final_payment_method = ?,
                 final_payment_reference_no = ?,
                 payment_status = 'Final Proof Uploaded'
                 WHERE user_id = ? AND request_id = ?";
+            } else if ($paymentType === 'Extension'){
+                $payment_query = "UPDATE rental_extension_requests SET payment_proof_path = ?, payment_method = ?, payment_reference_no = ?
+                WHERE user_id = ? AND request_id = ?";
+                $payment_query_2 = "UPDATE rental_requests SET payment_status = 'Extension Proof Uploaded' WHERE user_id = ? AND request_id = ?";
+                $payment_stmt_2 = $conn->prepare($payment_query_2);
+                $payment_stmt_2->bind_param("ii", $uID, $reqID);
+                $payment_stmt_2->execute();
+                $payment_stmt_2->close();
             }
 
             $payment_stmt = $conn->prepare($payment_query);

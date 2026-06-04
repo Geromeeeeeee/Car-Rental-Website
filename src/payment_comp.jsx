@@ -21,7 +21,10 @@ export function PaymentForm(){
     const downpaymentAmount = total * 0.50
     const finalPaymentAmount = total - downpaymentAmount
 
-    const displayAmount = type === 'Downpayment' ? downpaymentAmount : finalPaymentAmount
+    const displayAmount = type === 'Downpayment' ? downpaymentAmount : 
+                        type === 'Final Payment' ? finalPaymentAmount :
+                        type === 'Extension' ? paymentDetails.additional_cost :
+                        null
 
     const payment = async (e) => {
         e.preventDefault()

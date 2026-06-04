@@ -9,20 +9,22 @@ if(!isset($_SESSION['user_id'])){
 }
 
 if($_SERVER['REQUEST_METHOD'] === 'GET'){
-    $fetch_history = "SELECT 
+   $fetch_history = "SELECT 
     r.*, 
     c.image, 
     c.model, 
     rrd.return_date_actual, 
     rrd.final_refund_amount, 
     rrd.late_fee,
+    req.additional_cost,
+    req.status,
     (CURRENT_DATE > DATE_ADD(r.rental_date, INTERVAL (r.rental_duration_days - 1) DAY)) AS is_late,
     (CURRENT_DATE < DATE_ADD(r.rental_date, INTERVAL (r.rental_duration_days - 1) DAY)) AS is_early
     FROM rental_requests r 
     INNER JOIN cars c ON r.car_id = c.car_id 
     LEFT JOIN rental_return_details rrd ON r.request_id = rrd.request_id 
-    WHERE r.user_id = ? 
-    AND r.request_status IN ('Pending', 'Approved', 'Cancelled', 'Returned', 'Early Return Requested', 'Picked Up', 'Early Return Approved', 'Return Approved', 'Return Requested', 'Late Return Requested', 'Late Return Approved')";
+    LEFT JOIN rental_extension_requests req ON r.request_id = req.request_id
+    WHERE r.user_id = ?";
     $fetch_stmt = $conn->prepare($fetch_history);
     $fetch_stmt->bind_param("i",$user_id);
     $fetch_stmt->execute();
@@ -34,7 +36,16 @@ if($_SERVER['REQUEST_METHOD'] === 'GET'){
         $history[] = $row;
     }
 
-    $fetch_active = "SELECT ar.pickup_id, ar.request_id, ar.pickup_date_actual, r.car_id, r.rental_date, r.rental_duration_days, r.total_cost, r.request_status, r.request_id, r.payment_status ,c.image, c.model FROM rental_pickup_details ar INNER JOIN rental_requests r ON ar.request_id = r.request_id INNER JOIN cars c ON r.car_id = c.car_id WHERE r.user_id = ?";
+    $fetch_active = "SELECT 
+    ar.pickup_id, ar.request_id, ar.pickup_date_actual, 
+    r.car_id, r.rental_date, r.rental_duration_days, r.total_cost, r.request_status, r.request_id, r.payment_status,
+    c.image, c.model,
+    req.additional_cost 
+    FROM rental_pickup_details ar 
+    INNER JOIN rental_requests r ON ar.request_id = r.request_id 
+    INNER JOIN cars c ON r.car_id = c.car_id 
+    LEFT JOIN rental_extension_requests req ON ar.request_id = req.request_id
+    WHERE r.user_id = ?";
     $active_stmt = $conn->prepare($fetch_active);
     $active_stmt->bind_param("i", $user_id);
     $active_stmt->execute();

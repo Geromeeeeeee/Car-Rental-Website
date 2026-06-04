@@ -3,17 +3,21 @@ import {useState} from "react"
 import axios from "axios"
 import { API_BASE_URL } from "./config"
 import { PopUp } from "./pop-up"
+import { ExtendRentalModal } from "./extend"
 
 export function Rental_Buttons ({type, requests}){
+
     const [early, setEarly] = useState(false)
     const [chosenDate, setChosenDate] = useState("");
     const [refund, setRefund] = useState(0)
     const [lateFee, setLateFee] = useState(0)
     const [cancelPopUp, setCancelPopUp] = useState(false)
     const [showPopUp, setShowPopUp] = useState(false)
+    const [extendPopUp, setExtendPopUp] = useState(false)
     const [popUpMessage, setPopUpMessage] = useState("")
     const [messageType, setMessageType] = useState("") 
     const nav = useNavigate()
+
     const cancel_request = async () => {
         const send_cancel_req = await axios.post(`${API_BASE_URL}/back/rental_history.php`, {action: "cancel", reqID: requests.request_id}, {withCredentials: true})
                             
@@ -135,7 +139,14 @@ export function Rental_Buttons ({type, requests}){
             return(
                 <>
                 <PopUp show={showPopUp} message={popUpMessage} type={messageType}/>
-                <div className="ml-auto h-100% w-fit flex items-center justify-center">
+                <ExtendRentalModal
+                    show={extendPopUp}
+                    setShow={setExtendPopUp}
+                    carID={requests.car_id}
+                    currentRentalStart={requests.rental_date}
+                    reqID={requests.request_id}
+                />
+                <div className="m-auto h-100% w-fit flex flex-col items-center justify-center">
                 {returnStat ? (
                 <button className="w-fit h-fit p-1.5 bg-black/50 text-white rounded-lg text-l m-2.5 cursor-not-allowed">
                     Return Request Processing
@@ -145,9 +156,33 @@ export function Rental_Buttons ({type, requests}){
                     Return Request Processed. Please drop off vehicle
                 </button>
                 ) : (
-                <button className="w-fit h-fit p-1.5 m-2.5 transition duration-150ms ease-in-out bg-blue-500 text-white rounded-lg text-l hover:scale-[1.075] hover:bg-blue-800" onClick={() => isEarly ? setEarly(true) : req_return(returnType)}>
+                <>
+                <button className="w-fit h-fit max-w-[7.5vw] min-w-[5vw] p-1.5 m-2.5 transition duration-150ms ease-in-out bg-blue-500 text-white rounded-lg text-base hover:scale-[1.075] hover:bg-blue-800" onClick={() => isEarly ? setEarly(true) : req_return(returnType)}>
                     {buttonText}
                 </button>
+                {requests.payment_status === "Extension Payment Pending" ? (
+                <button
+                className="w-fit h-fit max-w-[7.5vw] min-w-[5vw] p-1.5 m-2.5 transition duration-150ms ease-in-out bg-blue-500 text-white rounded-lg text-base hover:scale-[1.075] hover:bg-blue-800"
+                onClick={() => nav("/payment_form", { state: { paymentDetails: requests, type: "Extension" } })}
+                >
+                Pay Extension
+                </button>
+                ) : (
+                <button disabled={requests.status === 'Pending' || requests.payment_status === 'Extension Proof Uploaded'}
+                className={`w-fit h-fit max-w-[7.5vw] min-w-[5vw] p-1 m-2.5 transition duration-150ms ease-in-out text-white text-base rounded-lg hover:scale-[1.075] 
+                ${requests.status === 'Pending' || requests.payment_status === 'Extension Proof Uploaded'
+                    ? "bg-gray-400 cursor-not-allowed" 
+                    : "bg-blue-500 hover:bg-blue-800"}`}
+                onClick={() => setExtendPopUp(true)}
+                >
+                {requests.status === 'Pending' 
+                ? "Extension Pending" : 
+                requests.payment_status === 'Extension Proof Uploaded' ? "Extension Payment Under Review" : "Extend Rental"}
+
+                
+                </button>
+                )}
+                </>               
                 )}
                 {early && (
                     
