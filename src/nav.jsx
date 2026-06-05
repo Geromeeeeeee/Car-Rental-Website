@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom"
 import { useState } from "react"
 import axios from "axios"
 import { API_BASE_URL } from "./config"
+import {HashLink} from "react-router-hash-link"
 
 export function Nav({navDisplay, logged, setLog, search, setSearch}){
     const [logOutDisp, setLogoutDisp] = useState(false)
@@ -43,9 +44,9 @@ export function Nav({navDisplay, logged, setLog, search, setSearch}){
             <div className="h-full w-fit flex items-center">
                 <img src="/MLT_logo.png" alt="Logo" className="h-[200%] aspect-square"/>
                 <div className="flex space-x-6 ml-10">
-                    <Link to={"/"} className="hover:text-gray-500 text-xl px-3 py-2 rounded-lg hover:shadow-md hover:bg-gray-100 transition-all duration-300">Home</Link>
-                    <a href="#" className="hover:text-gray-500 text-xl px-3 py-2 rounded-lg hover:shadow-md hover:bg-gray-100 transition-all duration-300">Cars</a>
-                    <a href="#About" className="hover:text-gray-500 text-xl px-3 py-2 rounded-lg hover:shadow-md hover:bg-gray-100 transition-all duration-300">About</a>
+                    <HashLink to="/#Home" className="hover:text-gray-500 text-xl px-3 py-2 rounded-lg hover:shadow-md hover:bg-gray-100 transition-all duration-300">Home</HashLink>
+                    <HashLink to="/#Cars" className="hover:text-gray-500 text-xl px-3 py-2 rounded-lg hover:shadow-md hover:bg-gray-100 transition-all duration-300">Cars</HashLink>
+                    <HashLink to="/#About" className="hover:text-gray-500 text-xl px-3 py-2 rounded-lg hover:shadow-md hover:bg-gray-100 transition-all duration-300">About</HashLink>
                     {logged && (
                     <>
                     <Link to={"/my_rentals"} className="hover:text-gray-500 text-xl px-3 py-2 rounded-lg hover:shadow-md hover:bg-gray-100 transition-all duration-300">My Rentals</Link>
@@ -54,8 +55,8 @@ export function Nav({navDisplay, logged, setLog, search, setSearch}){
                     )}
                 </div>
             </div>
-            <div>
-                <input type="search" name="" id="" placeholder="Toyota, Mitsubishi" className="w-[full] h-[7.5vh] p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" value={search} onChange={(e)=>setSearch(e.target.value)}/>
+            <div className="mx-2.5  mr-auto">
+                <input type="search" name="" id="" placeholder="Search" className="w-[full] h-[7.5vh] p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" value={search} onChange={(e)=>setSearch(e.target.value)}/>
             </div>
             <div className="log-in w-fit h-full">
                 <button 

@@ -8,7 +8,7 @@ import { API_BASE_URL, API_BASE_URL_ADMIN } from './config';
 export function Home(){
     return(
         <>
-        <main className="flex w-full max-w-[100vw] h-[80vh] overflow-hidden">
+        <main className="flex w-full max-w-[100vw] h-[80vh] overflow-hidden" id="Home">
 
             {/* LEFT SIDE */}
             <div className="left w-[50%] h-full p-5 flex flex-col justify-center">
@@ -70,7 +70,7 @@ export function Cars({logged, search}) {
 
   return (
     <>
-      <section className="w-full h-fit flex flex-col justify-start">
+      <section className="w-full h-fit flex flex-col justify-start" id="Cars">
         <div className="w-full h-[95vh] flex items-center justify-center p-0">
           <div className="carousel w-full overflow-x-scroll overflow-y-hidden h-full flex items-center justify-start [&::-webkit-scrollbar]:hidden snap-x snap-mandatory px-7.75" ref={scrollRef}>
           {cars?.filter((car) => 

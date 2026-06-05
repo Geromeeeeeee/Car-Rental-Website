@@ -4,6 +4,8 @@ import axios from "axios"
 import { API_BASE_URL } from "./config"
 import { PopUp } from "./pop-up"
 import { ExtendRentalModal } from "./extend"
+import { FaCreditCard, FaRegWindowClose, FaEllipsisH, FaTruckPickup, FaRegClock, FaCheckSquare } from "react-icons/fa";
+import { DiEnvato } from "react-icons/di"
 
 export function Rental_Buttons ({type, requests}){
 
@@ -31,12 +33,14 @@ export function Rental_Buttons ({type, requests}){
         }
     }
     const cancelButton = (
-    <button className="log-in w-[fit] h-[fit] p-2.5 px-5 mx-2.5 my-1.5 transition duration-150ms ease-in-out bg-red-500 text-white font-semibold rounded-lg text-l hover:scale-[1.075]" onClick={()=>cancel_request()}>Cancel
+    <button className="log-in w-[fit] h-[fit] p-2.5 px-5 mx-2.5 my-1.5 transition duration-150ms ease-in-out bg-red-500 text-white rounded-lg text-l hover:scale-[1.075]" onClick={()=>cancel_request()}>Cancel
     </button> 
     )
     const cancelModal = (
-    <button className="log-in w-[fit] h-[fit] p-1.5 mx-2.5 my-1.5 transition duration-150ms ease-in-out bg-black text-white font-semibold rounded-xl text-l hover:scale-[1.075]" 
-    onClick={()=>setCancelPopUp(true)}>Cancel
+    <button className="log-in w-[fit] p-1.5 mx-2.5 my-1.5 transition duration-150ms ease-in-out text-red-500 rounded-lg text-sm shadow-sm hover:bg-red-200 inline-flex items-center" 
+    onClick={()=>setCancelPopUp(true)}>
+    <FaRegWindowClose size={16} className="mr-2.5" />
+    Cancel
     </button> 
     )
     switch (type){
@@ -44,8 +48,9 @@ export function Rental_Buttons ({type, requests}){
             return(
                 <div className="ml-auto h-100% w-fit flex flex-col items-center justify-center">
                 {(requests.request_status === 'Approved' && (requests.payment_status === 'Unpaid' || requests.payment_status === 'Downpayment Reupload Required')) && (
-                    <button className="log-in p-1.5 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-800 mx-2.5 my-1.5" onClick={() => nav("/payment_form", { state: { paymentDetails: requests, type: 'Downpayment' } })}>
-                    {requests.payment_status === 'Unpaid' ? "Pay Downpayment" : "Reupload Downpayment"}
+                    <button className="log-in w-fit text-sm p-1.5 rounded-lg text-blue-500 mx-2.5 my-1.5 inline-flex items-center shadow-sm hover:bg-blue-200" onClick={() => nav("/payment_form", { state: { paymentDetails: requests, type: 'Downpayment' } })}>
+                    <FaCreditCard size={16} className="mr-2.5" />
+                    {requests.payment_status === 'Unpaid' ? "Downpayment" : "Re-upload"}
                     </button>)}
                     {(requests.request_status === 'Approved' && requests.payment_status === 'Final Reupload Required') && (
                     <button className="log-in p-2.5 bg-blue-500 text-white font-bold rounded-lg hover:bg-blue-800 m-2.5" onClick={() => nav("/payment_form", { state: { paymentDetails: requests, type: 'Final Payment' } })}>
@@ -75,8 +80,9 @@ export function Rental_Buttons ({type, requests}){
         case "Verification Pending":
             return(
                 <div className="ml-auto h-100% w-fit flex items-center justify-center">
-                    <div className="bg-yellow-400 text-yellow-700 p-1.5 rounded-lg font-semibold border border-yellow-500 mx-2.5 my-1.5">
-                        Verification in Progress
+                    <div className="text-yellow-400 p-1.5 rounded-lg mx-2.5 my-1.5 inline-flex items-center shadow-sm">
+                        <FaEllipsisH size={16} className="mr-2.5"/>
+                        Verification Pending
                     </div>
                 </div>
             )
@@ -84,12 +90,14 @@ export function Rental_Buttons ({type, requests}){
             return(
                 <div className="ml-auto h-100% w-fit flex items-center justify-center">
                 {requests.payment_status === 'Downpayment Verified' ? (
-                    <button className="log-in p-1.5 bg-green-500 text-white rounded-lg hover:bg-green-700 m-2.5" onClick={() => nav("/payment_form", { state: { paymentDetails: requests, type: 'Final Payment' } })}>
-                        Pay Final Balance
+                    <button className="log-in w-fit text-sm p-1.5 rounded-lg text-blue-500 mx-2.5 my-1.5 inline-flex items-center shadow-sm hover:bg-blue-200" onClick={() => nav("/payment_form", { state: { paymentDetails: requests, type: 'Final Payment' } })}>
+                        <FaCreditCard size={16} className="mr-2.5" />
+                        Final Balance
                     </button>
                 ) : (
-                    <div className="bg-green-600 text-white p-1.5 m-2.5 rounded-lg">
-                        Pickup on pickup date
+                    <div className="text-blue-500 p-1.5 rounded-lg mx-2.5 my-1.5 inline-flex items-center shadow-sm">
+                        <FaTruckPickup size={16} className="mr-2.5"/>
+                        Pickup Scheduled
                         </div>
                     )}
                 </div>
@@ -148,38 +156,40 @@ export function Rental_Buttons ({type, requests}){
                 />
                 <div className="m-auto h-100% w-fit flex flex-col items-center justify-center">
                 {returnStat ? (
-                <button className="w-fit h-fit p-1.5 bg-black/50 text-white rounded-lg text-l m-2.5 cursor-not-allowed">
+                <button className="w-fit text-sm p-1.5 rounded-lg text-blue-500 mx-2.5 my-1.5 inline-flex items-center shadow-sm">
+                    <FaEllipsisH size={16} className="mr-2.5"/>
                     Return Request Processing
                 </button>
                 ) : isApproved ? (
-                <button className="w-fit h-fit p-1.5 bg-blue-500 text-white  rounded-lg text-l m-2.5 cursor-not-allowed">
-                    Return Request Processed. Please drop off vehicle
-                </button>
+                <div className="w-fit text-sm p-1.5 rounded-lg text-blue-500 mx-2.5 my-1.5 inline-flex items-center shadow-sm">
+                    <FaCheckSquare size={16} className="mr-2.5"/>
+                    Return Approved: Ready For Drop Off
+                </div>
                 ) : (
                 <>
-                <button className="w-fit h-fit max-w-[7.5vw] min-w-[5vw] p-1.5 m-2.5 transition duration-150ms ease-in-out bg-blue-500 text-white rounded-lg text-base hover:scale-[1.075] hover:bg-blue-800" onClick={() => isEarly ? setEarly(true) : req_return(returnType)}>
+                <button className="log-in w-fit text-sm p-1.5 rounded-lg text-blue-500 mx-2.5 my-1.5 inline-flex items-center shadow-sm hover:bg-blue-200" onClick={() => isEarly ? setEarly(true) : req_return(returnType)}>
+                    <FaRegClock size={16} className="mr-2.5"/>
                     {buttonText}
                 </button>
                 {requests.payment_status === "Extension Payment Pending" ? (
                 <button
-                className="w-fit h-fit max-w-[7.5vw] min-w-[5vw] p-1.5 m-2.5 transition duration-150ms ease-in-out bg-blue-500 text-white rounded-lg text-base hover:scale-[1.075] hover:bg-blue-800"
+                className="log-in w-fit text-sm p-1.5 rounded-lg text-blue-500 mx-2.5 my-1.5 inline-flex items-center shadow-sm hover:bg-blue-200"
                 onClick={() => nav("/payment_form", { state: { paymentDetails: requests, type: "Extension" } })}
                 >
+                <FaCreditCard size={16} className="mr-2.5" />
                 Pay Extension
                 </button>
                 ) : (
                 <button disabled={requests.status === 'Pending' || requests.payment_status === 'Extension Proof Uploaded'}
-                className={`w-fit h-fit max-w-[7.5vw] min-w-[5vw] p-1 m-2.5 transition duration-150ms ease-in-out text-white text-base rounded-lg hover:scale-[1.075] 
+                className={`w-fit text-sm p-1.5 rounded-lg text-blue-500 mx-2.5 my-1.5 inline-flex items-center shadow-sm
                 ${requests.status === 'Pending' || requests.payment_status === 'Extension Proof Uploaded'
-                    ? "bg-gray-400 cursor-not-allowed" 
-                    : "bg-blue-500 hover:bg-blue-800"}`}
+                    ? "bg-gray-200 cursor-not-allowed" : 'bg-white hover:bg-blue-200'}`}
                 onClick={() => setExtendPopUp(true)}
                 >
+                {requests.status === 'Pending' || requests.payment_status === 'Extension Proof Uploaded' ? (<FaEllipsisH size={16} className="mr-2.5"/>) : (<FaRegClock size={16} className="mr-2.5"/>)}
                 {requests.status === 'Pending' 
                 ? "Extension Pending" : 
                 requests.payment_status === 'Extension Proof Uploaded' ? "Extension Payment Under Review" : "Extend Rental"}
-
-                
                 </button>
                 )}
                 </>               

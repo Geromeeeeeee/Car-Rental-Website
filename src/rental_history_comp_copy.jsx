@@ -47,13 +47,15 @@ export function Rental_History_Table({type, list}){
                 const pickupDate = dateFormatter.format(new Date(requests.rental_date))
                 const returnDate = return_date(requests.rental_date, requests.rental_duration_days)
                 return(
-                <tr key={index}>
+                <tr key={index} className="even:bg-gray-100">
                     <td className="text-center">{requests.model}</td>
                     <td className="text-center">{requests.total_cost}</td>
                     <td className="text-center">{requests.rental_duration_days} Days</td>
                     <td className="text-center">{pickupDate}</td>
                     <td className="text-center">
-                        {type === "Completed" ? requests.return_date_actual : returnDate}
+                        {type === "Completed" ? 
+                        dateFormatter.format(new Date(requests.return_date_actual)) 
+                        : returnDate}
                     </td>
                     <td className="text-center">{type === "Active" ? requests.request_status : type}</td>
                     {type === "Cancelled" ? null : 

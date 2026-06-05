@@ -55,6 +55,9 @@ export function RentalForm(){
         return{start: start, end: end}
     })
 
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
     const handleSubmit = async (e) => {
         e.preventDefault()
         try {
@@ -125,7 +128,7 @@ export function RentalForm(){
                     }
                 }}
                 excludeDateIntervals = {excluded_dates}
-                minDate = {new Date()}
+                minDate = {tomorrow}
                 placeholderText = "Pickup Date"
                 className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 mb-2.5"/>
 
