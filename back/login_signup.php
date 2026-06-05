@@ -68,8 +68,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!preg_match("/^[a-zA-Z ]+$/", $fullName)) { echo json_encode(["signup" => "2"]); exit; }
         if (strlen($fullName) < 5) { echo json_encode(["signup" => "3"]); exit; }
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) { echo json_encode(["signup" => "4"]); exit; }
+        
+        if (strlen($phone) !== 11 || !ctype_digit($phone)) { echo json_encode(["signup" => "13"]); exit; }
+        
         if (strlen($pass) < 8 || strlen($pass) > 20) { echo json_encode(["signup" => "5"]); exit; }
         if (!preg_match("/^[A-Za-z0-9]{3}-?\d{2}-?\d{6}$/", trim($licenseNumber))) { echo json_encode(["signup" => "6"]); exit; }
+        
+        if (strlen(trim($address)) < 15 || substr_count($address, ',') < 3) { echo json_encode(["signup" => "12"]); exit; }
         
         // Check if email already exists
         $check = $conn->prepare("SELECT user_id FROM users WHERE TRIM(email)=?");
@@ -244,7 +249,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div style='font-family: Arial, sans-serif; padding: 20px;'>
                         <h2>Hello " . htmlspecialchars($fullname) . ",</h2>
                         <p>Use this OTP to reset your password:</p>
-                        <h1 style='color: #1e3a8a;'> warmth" . $otp . "</h1>
+                        <h1 style='color: #1e3a8a;'>" . $otp . "</h1>
                     </div>";
 
                 $mail->send();

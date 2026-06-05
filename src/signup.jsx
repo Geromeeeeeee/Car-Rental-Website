@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom"; 
 import axios from "axios";
 import { API_BASE_URL } from "./config";
@@ -36,6 +36,7 @@ const PasswordInput = ({ id, value, onChange, placeholder, show, setShow }) => (
 
 export function Signup({ setNavDisplay }) {
     const navigate = useNavigate();
+    const fileInputRef = useRef(null);
 
     useEffect(() => {
         setNavDisplay(false);
@@ -47,7 +48,8 @@ export function Signup({ setNavDisplay }) {
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [phone, setPhone] = useState("");
-    const [address, setAddress] = useState(""); // Added address state
+    const [address, setAddress] = useState(""); 
+    const [addressError, setAddressError] = useState("");
     const [licenseNumber, setLicenseNumber] = useState("");
     const [licenseImage, setLicenseImage] = useState(null); 
     const [error, setError] = useState("");
@@ -97,15 +99,29 @@ export function Signup({ setNavDisplay }) {
         setPassword("");
         setConfirmPassword("");
         setPhone("");
-        setAddress(""); // Cleared address
+        setAddress(""); 
+        setAddressError("");
         setLicenseNumber("");
         setLicenseImage(null);
         setOtpCode("");
         setSavedFilename("");
         setShowOTPField(false);
         setIsAccountCreated(false);
-        const fileInput = document.getElementById("licenseImage");
-        if (fileInput) fileInput.value = "";
+        if (fileInputRef.current) fileInputRef.current.value = "";
+    };
+
+    const handleAddressChange = (value) => {
+        setAddress(value);
+        if (!value) {
+            setAddressError("");
+            return;
+        }
+        const commaCount = (value.match(/,/g) || []).length;
+        if (value.trim().length < 15 || commaCount < 3) {
+            setAddressError("⚠️ Incomplete address format. Make sure to use commas (,) to separate fields.");
+        } else {
+            setAddressError(""); 
+        }
     };
 
     const handleSignup = async (e) => {
@@ -113,19 +129,37 @@ export function Signup({ setNavDisplay }) {
         setError("");
         setSuccess("");
 
-        // Included address in the missing field validation check
-        if (!fullName || !email || !password || !confirmPassword || !phone || !address || !licenseNumber || !licenseImage) {
-            setError("Please fill in all fields and upload your license picture.");
+        if (!fullName) { setError("Please enter your full name."); window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
+        if (!email) { setError("Please enter your email address."); window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
+        if (!phone) { setError("Please enter your phone number."); window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
+        if (!address) { setError("Please enter your complete address."); window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
+        if (!licenseNumber) { setError("Please enter your driver's license number."); window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
+        if (!licenseImage) { setError("Please upload your driver's license picture."); window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
+        if (!password || !confirmPassword) { setError("Please fill in both password fields."); window.scrollTo({ top: 0, behavior: 'smooth' }); return; }
+
+        if (phone.length !== 11) {
+            setError("Phone number must be exactly 11 digits.");
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            return;
+        }
+
+        const commaCount = (address.match(/,/g) || []).length;
+        if (address.trim().length < 15 || commaCount < 3) {
+            setError("Please enter a complete address. Follow the format: House No., Street, Barangay, City, Province.");
+            setAddressError("⚠️ Address format incorrect.");
+            window.scrollTo({ top: 0, behavior: 'smooth' });
             return;
         }
 
         if (!isStrongPassword) {
             setError("Password is too weak. Use uppercase, lowercase, number, and special character.");
+            window.scrollTo({ top: 0, behavior: 'smooth' });
             return;
         }
 
         if (password !== confirmPassword) {
             setError("Passwords do not match.");
+            window.scrollTo({ top: 0, behavior: 'smooth' });
             return;
         }
 
@@ -137,7 +171,7 @@ export function Signup({ setNavDisplay }) {
             formData.append("email", email);
             formData.append("password", password);
             formData.append("phone", phone);
-            formData.append("address", address); // Sent address to backend
+            formData.append("address", address); 
             formData.append("licenseNumber", licenseNumber);
             formData.append("licenseImage", licenseImage); 
 
@@ -160,21 +194,27 @@ export function Signup({ setNavDisplay }) {
                 "8": "Account creation failed. Please try again later.",
                 "9": "Invalid file type. Only JPG, JPEG, and PNG are allowed.",
                 "10": "File is too large. Maximum size is 5MB.",
-                "11": "Failed to save uploaded image. Check server permissions."
+                "11": "Failed to save uploaded image. Check server permissions.",
+                "12": "Address is incomplete. Please include House No., Street, Barangay, City, and Province separated by commas.",
+                "13": "Phone number must be exactly 11 digits and contain only numbers."
             };
 
             if (stat === "otp_sent") {
-                setSuccess("An OTP code has been sent to your email. Please verify.");
+                setSuccess("An OTP code has been sent to your email.");
                 setSavedFilename(response.data.savedFilename); 
                 setShowOTPField(true); 
                 setResendTimer(60); 
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             } else if (errorMessages[stat]) {
                 setError(errorMessages[stat]);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             } else {
                 setError("Unexpected response. Please try again.");
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             }
         } catch (error) {
             setError("Connection error. Make sure Apache and MySQL are running.");
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         } finally {
             setIsSubmitting(false); 
         }
@@ -201,7 +241,7 @@ export function Signup({ setNavDisplay }) {
                     fullName: fullName,
                     password: password,
                     phone: phone,
-                    address: address, // Added address to OTP verification object
+                    address: address, 
                     licenseNumber: licenseNumber,
                     savedFilename: savedFilename
                 }
@@ -234,7 +274,7 @@ export function Signup({ setNavDisplay }) {
             formData.append("email", email);
             formData.append("password", password);
             formData.append("phone", phone);
-            formData.append("address", address); // Added address to resend payload
+            formData.append("address", address); 
             formData.append("licenseNumber", licenseNumber);
             formData.append("licenseImage", licenseImage); 
 
@@ -294,6 +334,10 @@ export function Signup({ setNavDisplay }) {
                                 required 
                                 disabled={isAccountCreated}
                             />
+                        </div>
+
+                        <div className="text-center text-sm text-gray-600 mb-4 px-4">
+                            Please check <span className="font-bold text-blue-900 break-all">{email}</span>
                         </div>
 
                         {!isAccountCreated && (
@@ -384,16 +428,23 @@ export function Signup({ setNavDisplay }) {
                                 Phone Number <span className="text-red-500">*</span>
                             </label>
                             <input
-                                type="tel"
+                                type="text"
                                 id="phone"
                                 value={phone}
-                                onChange={(e) => setPhone(e.target.value)}
-                                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
-                                placeholder="e.g., 1234 567 8901"
+                                maxLength={11}
+                                onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))}
+                                className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-1 transition ${
+                                    phone && phone.length !== 11
+                                        ? "border-red-500 focus:border-red-500 focus:ring-red-500 bg-red-50/10"
+                                        : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                                }`}
+                                placeholder="e.g., 09123456789"
                                 required
                                 autoComplete="tel"
                             />
-                            <p className="text-xs text-gray-500 mt-1">Format: 1234 567 8901</p>
+                            {phone && phone.length !== 11 && (
+                                <p className="text-xs text-red-500 font-medium mt-1">⚠️ Phone number must be exactly 11 digits. ({phone.length}/11)</p>
+                            )}
                         </div>
 
                         <div className="mb-4">
@@ -403,11 +454,18 @@ export function Signup({ setNavDisplay }) {
                             <textarea
                                 id="address"
                                 value={address}
-                                onChange={(e) => setAddress(e.target.value)}
-                                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition resize-none h-20"
+                                onChange={(e) => handleAddressChange(e.target.value)}
+                                className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-1 transition resize-none h-20 ${
+                                    addressError 
+                                        ? "border-red-500 focus:border-red-500 focus:ring-red-500 bg-red-50/30" 
+                                        : "border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                                }`}
                                 placeholder="House No., Street, Barangay, City, Province"
                                 required
                             />
+                            {addressError && (
+                                <p className="text-xs text-red-500 font-semibold mt-1">{addressError}</p>
+                            )}
                         </div>
 
                         <div className="mb-4">
@@ -440,6 +498,7 @@ export function Signup({ setNavDisplay }) {
                             <input
                                 type="file"
                                 id="licenseImage"
+                                ref={fileInputRef}
                                 accept="image/*"
                                 onChange={(e) => setLicenseImage(e.target.files[0])}
                                 disabled={!/^[A-Z0-9]{3}-?\d{2}-?\d{6}$/.test(licenseNumber.trim().toUpperCase())}
